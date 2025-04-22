@@ -1,0 +1,100 @@
+name: playku
+description: "A mobile game collection app with multiple single-player games."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Ikon tambahan
+  cupertino_icons: ^1.0.8
+
+  # GetX untuk state management dan routing
+  get: ^4.6.6
+
+  # Hive untuk penyimpanan data lokal
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # HTTP untuk komunikasi dengan MockAPI
+  http: ^1.3.0
+
+  # Intl untuk fitur multi-bahasa
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
+
+  # Shared Preferences untuk menyimpan preferensi pengguna (seperti bahasa yang dipilih)
+  shared_preferences: ^2.2.2
+
+  # Lottie untuk animasi
+  lottie: ^3.3.1
+
+  # Google Fonts untuk font yang lebih menarik
+  google_fonts: ^6.2.1
+
+  # Flutter Secure Storage (opsional, jika ingin menyimpan token login secara aman)
+  flutter_secure_storage: ^10.0.0-beta.4
+
+  # Syncfusion Charts (jika ingin menampilkan statistik atau leaderboard)
+  syncfusion_flutter_charts: ^28.2.9
+
+  # Flutter SVG (jika ada kebutuhan untuk menampilkan gambar SVG dalam UI)
+  flutter_svg: ^2.0.9
+  audioplayers: ^6.4.0
+  just_audio: ^0.9.46
+  math_expressions: ^2.6.0
+  flame: ^1.26.0
+  flame_audio: ^2.11.1
+  flame_tiled: ^2.0.2
+  flame_forge2d: ^0.18.2+7
+  flame_fire_atlas: ^1.8.2
+  shimmer: ^3.0.0
+  supabase_flutter: ^2.8.4
+  dio: ^5.8.0+1
+  image_picker: ^1.1.2
+  file_picker: ^10.0.0
+  permission_handler: ^12.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+  # Build Runner & Hive Generator (untuk membuat adapter otomatis saat menggunakan Hive)
+  build_runner: ^2.4.6
+  hive_generator: ^2.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo.png
+    - assets/images/memory.png
+    - assets/images/math.png
+    - assets/images/pattern_light.png
+    - assets/bg/hiasan.svg
+    - assets/icons/suara_on.svg
+    - assets/icons/suara_off.svg
+    - assets/audio/bgmusik.mp3
+    - assets/audio/bgmusik2.mp3
+    - assets/audio/bgmusik4.mp3
+    - assets/audio/click.mp3
+    - assets/audio/click2.mp3
+    - assets/audio/click3.mp3
+    - assets/audio/acc.mp3
+    - assets/audio/acc2.mp3
+    - assets/audio/wrong.mp3
+    - assets/bingkai/bingkai_default.png
+    - assets/bingkai/bingkai_1.png
+    - assets/bingkai/bingkai_2.png
+    # - assets/animations/
+
+
