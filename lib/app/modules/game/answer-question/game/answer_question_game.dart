@@ -9,6 +9,9 @@ import 'package:playku/app/data/models/leaderboard_model.dart';
 import 'package:playku/app/data/local/shared_preference_helper.dart';
 import 'package:playku/app/data/services/api_service.dart';
 import 'package:playku/app/data/services/audio_service.dart';
+import 'package:playku/app/data/services/game_service.dart';
+import 'package:playku/app/data/services/leaderboard_service.dart';
+import 'package:playku/app/data/services/point_service.dart';
 import 'package:playku/app/modules/game/answer-question/component/AnswerComponent.dart';
 import 'package:playku/app/modules/game/controller/game_controller.dart';
 import 'package:playku/app/modules/home/controller/home_controller.dart';
@@ -141,7 +144,7 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
         gamecontroller.selectedLevel.value.toString().split('.').last;
     loadLeaderboard(controller.idgame);
 
-    AuthService.postGameResult(
+    GameService.postGameResult(
       userId: userId,
       gameId: controller.idgame,
       score: finalScore,
@@ -152,7 +155,7 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
       if (success) {
         print("Data gameplay berhasil dikirim!");
         lastElapsedTime = "00:00";
-        int? newPoint = await AuthService.updateUserPoint(userId);
+        int? newPoint = await PointService.updateUserPoint(userId);
         if (newPoint != null) {
           userModel.value = userModel.value!.copyWith(point: newPoint);
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -187,14 +190,14 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
         gamecontroller.selectedLevel.value.toString().split('.').last;
 
     try {
-      leaderboard.value = await AuthService.getLeaderboard(gameId, levels);
+      leaderboard.value = await LeaderboardService.getLeaderboard(gameId, levels);
     } catch (e) {
       print("Error: $e");
     }
   }
 
   Future<void> addScore(Leaderboard entry) async {
-    await AuthService.updateLeaderboard(entry);
+    await LeaderboardService.updateLeaderboard(entry);
     await loadLeaderboard(entry.gameId);
   }
 

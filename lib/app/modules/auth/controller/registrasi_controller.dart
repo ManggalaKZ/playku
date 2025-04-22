@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:playku/app/data/services/api_service.dart';
+import 'package:playku/app/data/services/auth_service.dart';
 import 'package:playku/app/routes/app_routes.dart';
 
 class RegistrasiController extends GetxController {

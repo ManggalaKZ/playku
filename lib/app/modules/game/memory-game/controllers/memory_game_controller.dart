@@ -6,6 +6,9 @@ import 'package:playku/app/data/models/leaderboard_model.dart';
 import 'package:playku/app/data/models/user_model.dart';
 import 'package:playku/app/data/local/shared_preference_helper.dart';
 import 'package:playku/app/data/services/api_service.dart';
+import 'package:playku/app/data/services/game_service.dart';
+import 'package:playku/app/data/services/leaderboard_service.dart';
+import 'package:playku/app/data/services/point_service.dart';
 import 'package:playku/app/modules/game/memory-game/game/memory_game.dart';
 import 'package:playku/app/modules/home/controller/home_controller.dart';
 import 'package:playku/core.dart';
@@ -22,8 +25,6 @@ class MemoryCard {
   MemoryCard(
       {required this.value, this.isFlipped = false, this.isMatched = false});
 }
-
-// enum GameLevel { easy, medium, hard }
 
 class MemoryGameController extends GetxController {
   var selectedLevel = GameLevel.easy.obs;
@@ -208,7 +209,7 @@ class MemoryGameController extends GetxController {
     print("Final Time: $finalTime");
     print("Date Now: $now");
 
-    AuthService.postGameResult(
+    GameService.postGameResult(
       userId: userId,
       gameId: controller.idgame,
       score: finalScore,
@@ -218,7 +219,7 @@ class MemoryGameController extends GetxController {
     ).then((success) async {
       if (success) {
         print("Data gameplay berhasil dikirim!");
-        int? newPoint = await AuthService.updateUserPoint(userId);
+        int? newPoint = await PointService.updateUserPoint(userId);
         if (newPoint != null) {
           userModel.value = userModel.value!.copyWith(point: newPoint);
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -255,14 +256,14 @@ class MemoryGameController extends GetxController {
     String levels = selectedLevel.value.toString().split('.').last;
 
     try {
-      leaderboard.value = await AuthService.getLeaderboard(gameId, levels);
+      leaderboard.value = await LeaderboardService.getLeaderboard(gameId, levels);
     } catch (e) {
       print("Error: $e");
     }
   }
 
   Future<void> addScore(Leaderboard entry) async {
-    await AuthService.updateLeaderboard(entry);
+    await LeaderboardService.updateLeaderboard(entry);
     await loadLeaderboard(entry.gameId);
   }
 

@@ -7,6 +7,8 @@ import 'package:playku/app/data/models/leaderboard_model.dart';
 import 'package:playku/app/data/local/shared_preference_helper.dart';
 import 'package:playku/app/data/services/api_service.dart';
 import 'package:playku/app/data/services/audio_service.dart';
+import 'package:playku/app/data/services/leaderboard_service.dart';
+import 'package:playku/app/data/services/user_service.dart';
 import 'package:playku/app/modules/home/components/edit_profile_dialog.dart';
 import 'package:playku/app/modules/home/components/leaderboard_dialog.dart';
 import 'package:playku/app/widgets/image_picker.dart';
@@ -77,7 +79,7 @@ class HomeController extends GetxController {
   Future<void> loadLeaderboard() async {
     try {
       isLoadingui.value = true;
-      leaderboard.value = await AuthService.getLeaderboardAll();
+      leaderboard.value = await LeaderboardService.getLeaderboardAll();
       filterUserTopLeaderboard();
     } catch (e) {
       print("Error: $e");
@@ -234,7 +236,7 @@ class HomeController extends GetxController {
   }
 
   Future<void> updateProfile(userId, data) async {
-    final api = AuthService();
+    final api = UserService();
     if (passwordController.text.isNotEmpty) {
       if (passwordController.text != confirmPasswordController.text) {
         Get.snackbar("Error", "Password tidak cocok");

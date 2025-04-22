@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:playku/app/data/models/user_model.dart';
+import 'package:playku/app/data/services/auth_service.dart';
 import 'package:playku/app/routes/app_routes.dart';
 import 'package:playku/theme.dart';
 
 import '../../../data/local/shared_preference_helper.dart';
-import '../../../data/services/api_service.dart';
 import '../../../data/services/audio_service.dart';
 
 class LoginController extends GetxController {

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:playku/app/data/services/api_service.dart';
 import 'package:playku/app/data/services/audio_service.dart';
+import 'package:playku/app/data/services/auth_service.dart';
 import 'package:playku/app/modules/auth/controller/login_controller.dart';
 
 class LoginBinding extends Bindings {
