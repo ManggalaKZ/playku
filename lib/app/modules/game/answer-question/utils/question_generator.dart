@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:math_expressions/math_expressions.dart';
-import 'package:playku/app/modules/game/memory-game/controllers/memory_game_controller.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core_game.dart';
 
 class QuestionData {
   final String question;

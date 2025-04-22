@@ -2,20 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:playku/app/data/models/leaderboard_model.dart';
-import 'package:playku/app/data/models/user_model.dart';
-import 'package:playku/app/data/local/shared_preference_helper.dart';
-import 'package:playku/app/data/services/api_service.dart';
-import 'package:playku/app/data/services/game_service.dart';
-import 'package:playku/app/data/services/leaderboard_service.dart';
-import 'package:playku/app/data/services/point_service.dart';
-import 'package:playku/app/modules/game/memory-game/game/memory_game.dart';
-import 'package:playku/app/modules/home/controller/home_controller.dart';
 import 'package:playku/core.dart';
+import 'package:playku/core_game.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../../data/services/audio_service.dart';
-import '../../controller/game_controller.dart';
 
 class MemoryCard {
   final int value;

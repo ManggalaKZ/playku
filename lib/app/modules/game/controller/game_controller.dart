@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:playku/app/data/services/audio_service.dart';
-import 'package:playku/app/modules/game/components/select_level_dialog.dart';
-import 'package:playku/app/modules/game/memory-game/controllers/memory_game_controller.dart';
 import 'package:playku/core.dart';
+import 'package:playku/core_game.dart';
 
-import '../mineswepper/controllers/minesweeper_controller.dart';
 
 class GameController extends GetxController {
   var countdown = 3.obs;
