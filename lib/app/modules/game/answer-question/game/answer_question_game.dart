@@ -10,7 +10,7 @@ import 'package:playku/app/data/local/shared_preference_helper.dart';
 import 'package:playku/app/data/services/api_service.dart';
 import 'package:playku/app/data/services/audio_service.dart';
 import 'package:playku/app/modules/game/answer-question/component/AnswerComponent.dart';
-import 'package:playku/app/modules/home/controller/game_controller.dart';
+import 'package:playku/app/modules/game/controller/game_controller.dart';
 import 'package:playku/app/modules/home/controller/home_controller.dart';
 import 'package:playku/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';

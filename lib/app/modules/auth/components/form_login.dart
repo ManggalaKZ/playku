@@ -19,8 +19,6 @@ class CustomTextField extends StatelessWidget {
     final LoginController loginController = Get.find<LoginController>();
 
     return Obx(() {
-      // Jika ini field password, gunakan isPasswordVisible
-      // Jika bukan password, gunakan _dummyTrigger agar tetap butuh Obx tetapi tidak terlihat
       bool isObscure = obscureText ? !loginController.isPasswordVisible.value : loginController.dummyTrigger.value;
 
       return Container(

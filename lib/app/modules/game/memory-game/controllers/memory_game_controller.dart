@@ -12,7 +12,7 @@ import 'package:playku/core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../data/services/audio_service.dart';
-import '../../../home/controller/game_controller.dart';
+import '../../controller/game_controller.dart';
 
 class MemoryCard {
   final int value;

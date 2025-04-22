@@ -8,7 +8,7 @@ import 'package:playku/app/data/models/user_model.dart';
 import 'package:playku/app/data/services/api_service.dart';
 import 'package:playku/app/modules/game/mineswepper/game/minesweeper_game.dart';
 import 'package:playku/app/modules/game/mineswepper/utils/board_generator.dart';
-import 'package:playku/app/modules/home/controller/game_controller.dart';
+import 'package:playku/app/modules/game/controller/game_controller.dart';
 import 'package:playku/app/modules/home/controller/home_controller.dart';
 import 'package:playku/core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
