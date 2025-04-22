@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:playku/app/data/models/frame_model.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core.dart';
+
 
 class PurchaseFrameDialog {
   static void show({

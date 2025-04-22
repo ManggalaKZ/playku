@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:playku/app/data/services/audio_service.dart';
-import 'package:playku/app/routes/app_routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:playku/core.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

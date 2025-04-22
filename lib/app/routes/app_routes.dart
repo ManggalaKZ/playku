@@ -1,19 +1,6 @@
 import 'package:get/get.dart';
-import 'package:playku/app/bindings/home_binding.dart';
 import 'package:playku/app/bindings/login_binding.dart';
-import 'package:playku/app/bindings/memory_game_binding.dart';
-import 'package:playku/app/bindings/minesweeper_binding.dart';
-import 'package:playku/app/bindings/registrasi_binding.dart';
-import 'package:playku/app/bindings/welcome_binding.dart';
-import 'package:playku/app/modules/auth/view/registrasi_view.dart';
-import 'package:playku/app/modules/game/answer-question/view/answer_question_view.dart';
-import 'package:playku/app/modules/game/memory-game/views/memory_game_view.dart';
-import 'package:playku/app/modules/game/mineswepper/views/minesweeper_view.dart';
-import '../bindings/splash_binding.dart';
-import '../modules/auth/view/login_view.dart';
-import '../modules/home/view/home_view.dart';
-import '../modules/landing/view/splash_view.dart';
-import '../modules/welcome/view/welcome_view.dart';
+import 'package:playku/core.dart';
 
 abstract class Routes {
   static const SPLASH = '/splash';
@@ -53,13 +40,13 @@ class AppPages {
     ),
     GetPage(
       name: Routes.HOME,
-      page: () =>  HomeView(),
+      page: () => HomeView(),
       binding: HomeBinding(),
       transition: Transition.downToUp,
     ),
     GetPage(
       name: Routes.MINESWEEPER,
-      page: () =>  MinesweeperView(),
+      page: () => MinesweeperView(),
       binding: MinesweeperBinding(),
       transition: Transition.noTransition,
     ),

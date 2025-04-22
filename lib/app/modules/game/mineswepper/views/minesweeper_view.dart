@@ -1,14 +1,9 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:playku/app/data/services/audio_service.dart';
-import 'package:playku/app/modules/game/mineswepper/game/minesweeper_game.dart';
 import 'package:playku/app/modules/game/mineswepper/views/gameOver_view.dart';
-import 'package:playku/app/modules/game/mineswepper/views/gameWin_View.dart';
-import 'package:playku/app/widgets/countdown_view.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core.dart';
 
-import '../controllers/minesweeper_controller.dart';
 
 class MinesweeperView extends StatelessWidget {
   const MinesweeperView({Key? key}) : super(key: key);
@@ -32,7 +27,7 @@ class MinesweeperView extends StatelessWidget {
           GameWidget(
             game: game,
             overlayBuilderMap: {
-              'GameOverOverlay': (_, __) => GameOverScreen(),
+              'GameOverOverlay': (_, __) => GameOverScreenMinesweeper(),
               'GameWinOverlay': (_, __) => GameWinScreen(),
             },
           ),

@@ -1,4 +1,3 @@
-// models/frame_model.dart
 class FrameModel {
   final String id;
   final String name;

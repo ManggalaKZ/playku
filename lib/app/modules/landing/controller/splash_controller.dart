@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:playku/app/data/local/shared_preference_helper.dart';
-import '../../../routes/app_routes.dart';
+import 'package:playku/core.dart';
+
 
 class SplashController extends GetxController {
   @override

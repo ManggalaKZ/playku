@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:playku/theme.dart';
-import '../controller/splash_controller.dart';
+import 'package:playku/core.dart';
+
 
 class SplashView extends GetView<SplashController> {
   const SplashView({super.key});

@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:playku/app/modules/game/mineswepper/components/board_component.dart';
-import 'package:playku/app/modules/game/mineswepper/controllers/minesweeper_controller.dart';
-import 'package:playku/app/modules/game/mineswepper/game/minesweeper_game.dart';
-
-import 'minesweeper_view.dart';
+import 'package:playku/core.dart';
 
 class GameWinScreen extends StatelessWidget {
   final game = Get.find<MinesweeperGame>();

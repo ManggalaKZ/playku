@@ -1,9 +1,8 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:playku/app/modules/game/mineswepper/models/tile_model.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core.dart';
+
 
 class TileComponent extends PositionComponent with TapCallbacks {
   late TileModel tile;

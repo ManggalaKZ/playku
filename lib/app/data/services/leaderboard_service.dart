@@ -1,10 +1,7 @@
 import 'dart:convert';
-
-import 'package:playku/app/data/models/leaderboard_model.dart';
-import 'package:playku/app/data/services/auth_service.dart';
-import 'package:playku/app/data/services/game_service.dart';
-import 'package:playku/app/data/services/user_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:playku/core.dart';
+
 
 class LeaderboardService {
   static const String baseUrl =

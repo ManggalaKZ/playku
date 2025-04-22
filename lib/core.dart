@@ -17,7 +17,6 @@ export 'package:playku/app/data/models/frame_model.dart';
 export 'package:playku/app/data/models/game_model.dart';
 export 'package:playku/app/data/models/leaderboard_model.dart';
 export 'package:playku/app/data/models/user_model.dart';
-export 'package:playku/app/data/services/api_service.dart';
 export 'package:playku/app/data/services/audio_service.dart';
 export 'package:playku/app/data/services/auth_service.dart';
 export 'package:playku/app/data/services/game_service.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:playku/theme.dart';
-import '../modules/auth/controller/login_controller.dart';
+import 'package:playku/core.dart';
+
 
 class LanguangeSwitch extends StatelessWidget {
   final LoginController controller;

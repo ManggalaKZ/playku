@@ -4,11 +4,9 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/text.dart';
 import 'package:get/get.dart';
-import 'package:playku/app/modules/game/mineswepper/components/board_component.dart';
-import 'package:playku/app/modules/game/mineswepper/controllers/minesweeper_controller.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/app/modules/game/mineswepper/components/board_component_minesweeper.dart';
+import 'package:playku/core.dart';
 
-import '../components/game_timer_component.dart';
 
 class MinesweeperGame extends FlameGame {
   final controller = Get.find<MinesweeperController>();
@@ -23,7 +21,7 @@ class MinesweeperGame extends FlameGame {
   Future<void> onLoad() async {
     super.onLoad();
     controller.gameRef = this;
-    add(BoardComponent());
+    add(BoardComponentMinesweeper());
     timerText = TextComponent(
       text: 'Waktu: 00:00',
       anchor: Anchor.topCenter,
@@ -104,7 +102,7 @@ class MinesweeperGame extends FlameGame {
 
     clearGame();
 
-    add(BoardComponent());
+    add(BoardComponentMinesweeper());
     gameTimer.reset();
     startGame();
     add(timerText);

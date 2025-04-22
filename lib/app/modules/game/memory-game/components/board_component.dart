@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
-import 'package:playku/app/modules/game/memory-game/components/card_component.dart';
-import 'package:playku/app/modules/game/memory-game/controllers/memory_game_controller.dart';
 import 'dart:math';
+import 'package:playku/core.dart';
+
 
 class BoardComponent extends PositionComponent with HasGameRef {
   final MemoryGameController controller;

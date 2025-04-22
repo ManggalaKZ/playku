@@ -1,9 +1,8 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
-import 'package:playku/app/data/services/audio_service.dart';
-import 'package:playku/theme.dart';
-import '../controllers/memory_game_controller.dart';
+import 'package:playku/core.dart';
+
 
 class CardComponent extends PositionComponent with TapCallbacks {
   final int index;

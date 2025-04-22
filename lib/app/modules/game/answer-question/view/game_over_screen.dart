@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:playku/app/data/services/audio_service.dart';
-import 'package:playku/theme.dart';
-import '../game/answer_question_game.dart';
+import 'package:playku/core.dart';
+
 
 class GameOverScreen extends StatelessWidget {
   final AnswerQuestionGame game;

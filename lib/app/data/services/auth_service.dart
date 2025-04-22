@@ -3,6 +3,7 @@ import 'package:playku/app/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:http/http.dart' as http;
 
+
 class AuthService {
   static const String baseUrl =
       'https://lvqfhlohgdaqudfuivqb.supabase.co/rest/v1/';

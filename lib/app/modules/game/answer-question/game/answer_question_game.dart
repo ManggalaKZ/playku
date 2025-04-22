@@ -1,26 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flame/events.dart';
-
-import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:get/get.dart';
-import 'package:playku/app/data/models/leaderboard_model.dart';
-import 'package:playku/app/data/local/shared_preference_helper.dart';
-import 'package:playku/app/data/services/api_service.dart';
-import 'package:playku/app/data/services/audio_service.dart';
-import 'package:playku/app/data/services/game_service.dart';
-import 'package:playku/app/data/services/leaderboard_service.dart';
-import 'package:playku/app/data/services/point_service.dart';
-import 'package:playku/app/modules/game/answer-question/component/AnswerComponent.dart';
-import 'package:playku/app/modules/game/controller/game_controller.dart';
-import 'package:playku/app/modules/home/controller/home_controller.dart';
-import 'package:playku/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../data/models/user_model.dart';
-import '../utils/question_generator.dart';
-import '../component/question_component.dart';
 import 'package:flutter/material.dart';
+import 'package:playku/core.dart';
+
 
 class AnswerQuestionGame extends FlameGame with TapDetector {
   GameController gamecontroller = Get.put(GameController());
@@ -133,7 +119,6 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
   void gameOver() async {
     stopTimer();
     GameController controller = Get.put(GameController());
-    HomeController homeController = Get.find<HomeController>();
 
     lastElapsedTime = elapsedTimeString.value;
     int finalTime = convertTimeToSeconds(lastElapsedTime);

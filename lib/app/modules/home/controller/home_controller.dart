@@ -1,20 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:playku/app/data/models/leaderboard_model.dart';
-import 'package:playku/app/data/local/shared_preference_helper.dart';
-import 'package:playku/app/data/services/api_service.dart';
-import 'package:playku/app/data/services/audio_service.dart';
-import 'package:playku/app/data/services/leaderboard_service.dart';
-import 'package:playku/app/data/services/user_service.dart';
-import 'package:playku/app/modules/home/components/edit_profile_dialog.dart';
-import 'package:playku/app/modules/home/components/leaderboard_dialog.dart';
-import 'package:playku/app/widgets/image_picker.dart';
-import 'package:playku/theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../../data/models/user_model.dart';
+import 'package:playku/core.dart';
 
 class HomeController extends GetxController {
   var userModel = Rxn<UserModel>();

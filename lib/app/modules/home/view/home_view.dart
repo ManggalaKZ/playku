@@ -2,18 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import 'package:playku/app/data/local/shared_preference_helper.dart';
-import 'package:playku/app/data/models/frame_model.dart';
-import 'package:playku/app/data/services/audio_service.dart';
-import 'package:playku/app/modules/auth/controller/login_controller.dart';
-import 'package:playku/app/modules/game/controller/game_controller.dart';
-import 'package:playku/app/modules/home/controller/home_controller.dart';
-import 'package:playku/app/modules/home/components/purchase_frame_dialog.dart';
-import 'package:playku/app/routes/app_routes.dart';
-import 'package:playku/app/widgets/image_picker.dart';
-import 'package:playku/app/widgets/sound_button.dart';
-import 'package:playku/theme.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:playku/core.dart';
+
 
 class HomeView extends GetView<HomeController> {
   HomeView({super.key});
@@ -130,15 +121,12 @@ class HomeView extends GetView<HomeController> {
                       imagePath: 'assets/bingkai/bingkai_2.png',
                       price: 500,
                     ),
-                    // Tambah lagi...
                   ];
                   AudioService.playButtonSound();
                   PurchaseFrameDialog.show(
                     frames: frames,
                     onBuy: (frame) {
-                      // Tambahkan logika pembelian di sini
                       print("Membeli: ${frame.name}");
-                      // contoh: controller.buyFrame(frame.id);
                     },
                   );
                 }),
@@ -296,7 +284,7 @@ class HomeView extends GetView<HomeController> {
                     bottom: 0,
                     left: 0,
                     child: InkWell(
-                      key: _editButtonKey, // ← Tambahkan key
+                      key: _editButtonKey, 
                       onTap: () {
                         controller.showEditProfile();
                       },

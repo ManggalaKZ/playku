@@ -1,10 +1,8 @@
 import 'dart:ui';
-
 import 'package:flame/game.dart';
 import 'package:get/get.dart';
-import 'package:playku/theme.dart';
-import '../components/board_component.dart';
-import '../controllers/memory_game_controller.dart';
+import 'package:playku/core.dart';
+
 
 class MemoryGame extends FlameGame {
   final MemoryGameController controller = Get.find<MemoryGameController>();

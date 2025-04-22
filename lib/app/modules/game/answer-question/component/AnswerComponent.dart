@@ -1,7 +1,5 @@
 import 'package:flame/components.dart';
-import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
-import 'package:playku/app/data/services/audio_service.dart';
 
 class AnswerComponent extends PositionComponent {
   final String text;

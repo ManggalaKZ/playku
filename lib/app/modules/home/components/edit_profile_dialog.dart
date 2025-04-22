@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:playku/app/data/services/audio_service.dart';
-import 'package:playku/app/widgets/image_picker.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core.dart';
 
 class EditProfileDialog extends StatelessWidget {
   final TextEditingController usernameController;

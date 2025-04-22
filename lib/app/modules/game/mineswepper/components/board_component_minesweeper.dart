@@ -1,10 +1,9 @@
 import 'package:flame/components.dart';
 import 'package:get/get.dart';
-import 'package:playku/app/modules/game/mineswepper/components/tile_component.dart';
+import 'package:playku/core.dart';
 
-import '../controllers/minesweeper_controller.dart';
 
-class BoardComponent extends PositionComponent with HasGameRef {
+class BoardComponentMinesweeper extends PositionComponent with HasGameRef {
   final controller = Get.find<MinesweeperController>();
   final double padding = 4.0;
 

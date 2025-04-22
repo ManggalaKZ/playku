@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:playku/theme.dart';
-import '../../../data/services/audio_service.dart';
-import '../controller/welcome_controller.dart';
+import 'package:playku/core.dart';
+
 
 class WelcomeView extends GetView<WelcomeController> {
   const WelcomeView({super.key});
