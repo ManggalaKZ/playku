@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:playku/core.dart';
 
-
 class HomeView extends GetView<HomeController> {
   HomeView({super.key});
   final GlobalKey _menuKey = GlobalKey();
@@ -102,33 +101,22 @@ class HomeView extends GetView<HomeController> {
                   color: AppColors.whitePrimary,
                 ),
                 onPressed: () {
-                  final frames = [
-                    FrameModel(
-                      id: 'frame1',
-                      name: 'Bingkai Emas',
-                      imagePath: 'assets/bingkai/bingkai_default.png',
-                      price: 300,
-                    ),
-                    FrameModel(
-                      id: 'frame1',
-                      name: 'Bingkai Emas',
-                      imagePath: 'assets/bingkai/bingkai_1.png',
-                      price: 300,
-                    ),
-                    FrameModel(
-                      id: 'frame2',
-                      name: 'Bingkai Sakura',
-                      imagePath: 'assets/bingkai/bingkai_2.png',
-                      price: 500,
-                    ),
-                  ];
                   AudioService.playButtonSound();
-                  PurchaseFrameDialog.show(
-                    frames: frames,
-                    onBuy: (frame) {
-                      print("Membeli: ${frame.name}");
-                    },
-                  );
+                  controller.showPurchaseFrameDialog();
+                }),
+          ),
+          Positioned(
+            top: 45,
+            left: 40,
+            child: IconButton(
+                icon: Icon(
+                  Icons.border_all,
+                  size: 32,
+                  color: AppColors.whitePrimary,
+                ),
+                onPressed: () {
+                  AudioService.playButtonSound();
+                  controller.showChooseFrameDialog();
                 }),
           ),
         ],
@@ -204,6 +192,7 @@ class HomeView extends GetView<HomeController> {
     return Padding(
       padding: const EdgeInsets.only(top: 50, bottom: 20),
       child: Obx(() {
+        final frame = controller.usedFrame.value;
         final user = controller.userModel.value;
         if (user != null && !_tooltipShown) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -255,6 +244,15 @@ class HomeView extends GetView<HomeController> {
             ],
           );
         }
+        if (controller.isLoadingFrames.value || frame == null) {
+          // Contoh: Tampilkan placeholder atau avatar default
+          return CircleAvatar(
+            radius: 50,
+            backgroundColor: Colors.grey.shade300, // Warna placeholder
+            // Atau tampilkan ikon default
+            // child: Icon(Icons.person, size: 40, color: Colors.white),
+          );
+        }
 
         return Column(
           children: [
@@ -275,7 +273,7 @@ class HomeView extends GetView<HomeController> {
                     onBackgroundImageError: (_, __) => const Icon(Icons.error),
                   ),
                   Image.asset(
-                    'assets/bingkai/bingkai_1.png',
+                    frame.imagePath,
                     width: 120,
                     height: 120,
                     fit: BoxFit.cover,
@@ -284,7 +282,7 @@ class HomeView extends GetView<HomeController> {
                     bottom: 0,
                     left: 0,
                     child: InkWell(
-                      key: _editButtonKey, 
+                      key: _editButtonKey,
                       onTap: () {
                         controller.showEditProfile();
                       },

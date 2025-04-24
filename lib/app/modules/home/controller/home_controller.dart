@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:playku/app/data/services/border_service.dart';
+import 'package:playku/app/modules/home/components/choose_frame_dialog.dart';
 import 'package:playku/core.dart';
 
 class HomeController extends GetxController {
@@ -20,11 +22,17 @@ class HomeController extends GetxController {
   var namaController = TextEditingController();
   var emailController = TextEditingController();
   final isUploading = false.obs;
+  var frames = <FrameModel>[].obs;
+  var usedFrame = Rxn<FrameModel>();
+  var isLoadingFrames = false.obs;
+  final UserService _userService = UserService();
 
   @override
   void onInit() {
     super.onInit();
-    loadUserFromPrefs();
+    loadUserFromPrefs().then((_) {
+      fetchFrames();
+    });
     loadLeaderboard();
   }
 
@@ -45,21 +53,24 @@ class HomeController extends GetxController {
   }
 
   Future<void> loadUserFromPrefs() async {
-    var userData = await SharedPreferenceHelper.getUserData();
+    isLoading.value = true;
+    try {
+      var userDataMap = await SharedPreferenceHelper.getUserData();
 
-    if (userData != null) {
-      userModel.value = UserModel(
-        point: userData["point"] ?? 0,
-        id: userData["id"] ?? 0,
-        username: userData["username"] ?? "",
-        name: userData["name"] ?? "",
-        email: userData["email"] ?? "",
-        avatar: userData["avatar"] ?? "",
-      );
+      if (userDataMap != null) {
+        userModel.value = UserModel.fromJson(userDataMap);
+        print("User berhasil dimuat: ${userModel.value!.id}");
+        print("Owned Borders Loaded: ${userModel.value!.ownedBorderIds}");
+        print("Used Border ID Loaded: ${userModel.value!.usedBorderIds}");
 
-      print("User berhasil dimuat: ${userModel.value!.id}");
-      await Future.delayed(Duration.zero);
-      userModel.refresh();
+        userModel.refresh();
+      } else {
+        print("User data not found in SharedPreferences.");
+      }
+    } catch (e) {
+      print("Error loading user from prefs: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -307,5 +318,201 @@ class HomeController extends GetxController {
         ),
       ),
     );
+  }
+
+  Future<void> fetchFrames() async {
+    try {
+      isLoadingFrames.value = true;
+
+      final List<FrameModel> fetchedFrames = await BorderService.fetchBorders();
+      frames.value = fetchedFrames;
+      _updateUsedFrame();
+    } catch (e) {
+      Get.snackbar("Error", "Gagal memuat data frame: $e");
+      print("Error fetching frames: $e");
+    } finally {
+      isLoadingFrames.value = false;
+    }
+  }
+
+  void _updateUsedFrame() {
+    if (userModel.value != null && frames.isNotEmpty) {
+      final usedId = userModel.value!.usedBorderIds;
+      print("Attempting to find used frame with ID: $usedId");
+      if (usedId != null && usedId.isNotEmpty) {
+        try {
+          final foundFrame = frames.firstWhereOrNull(
+            (frame) => frame.id == usedId,
+          );
+
+          if (foundFrame != null) {
+            print("Used frame found: ${foundFrame.name}");
+            usedFrame.value = foundFrame;
+          } else {
+            print(
+                "Used frame with ID $usedId not found in the fetched frames list.");
+            usedFrame.value = null;
+          }
+        } catch (e) {
+          print("Error finding used frame: $e");
+          usedFrame.value = null;
+        }
+      } else {
+        print("User has no used border ID set.");
+
+        usedFrame.value = null;
+      }
+      usedFrame.refresh();
+    } else {
+      print(
+          "Cannot update used frame yet. User loaded: ${userModel.value != null}, Frames loaded: ${frames.isNotEmpty}");
+    }
+  }
+
+  Future<void> purchaseSelectedBorder(FrameModel border) async {
+    if (userModel.value == null) {
+      Get.snackbar("Error", "Data user tidak ditemukan.");
+      return;
+    }
+
+    final userId = userModel.value!.id;
+    final borderId = border.id;
+    final borderPrice = border.price;
+    print("userid${userId}");
+    print("borderId${borderId}");
+    print("borderPrice${borderPrice}");
+
+    Get.dialog(const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false);
+
+    try {
+      final updatedUser =
+          await _userService.purchaseBorder(userId, borderId, borderPrice);
+
+      Get.back();
+
+      if (updatedUser != null) {
+        userModel.value = updatedUser;
+        print(
+            "Owned Borders after purchase: ${userModel.value?.ownedBorderIds}");
+        userModel.refresh();
+
+        Get.back();
+        Get.snackbar("Berhasil", "Border berhasil dibeli!");
+      }
+    } catch (e) {
+      Get.back();
+      Get.snackbar("Gagal", e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  void showPurchaseFrameDialog() {
+    if (isLoadingFrames.value) {
+      Get.snackbar("Info", "Sedang memuat data frame...");
+      return;
+    }
+    if (frames.isEmpty) {
+      Get.snackbar("Info", "Tidak ada frame tersedia saat ini.");
+      return;
+    }
+    print("Owned Border IDs: ${userModel.value!.ownedBorderIds}");
+
+    Get.dialog(
+      PurchaseFrameDialog(
+        frames: frames,
+        userPoints: userModel.value!.point,
+        ownedBorderIds: userModel.value!.ownedBorderIds ?? [],
+        onPurchase: (selectedFrame) {
+          purchaseSelectedBorder(selectedFrame);
+        },
+      ),
+    );
+  }
+
+  void fetchOwnedBorders() async {}
+
+  void showChooseFrameDialog() {
+    if (userModel.value == null) {
+      Get.snackbar("Error", "Data user belum dimuat.");
+      return;
+    }
+    if (isLoadingFrames.value) {
+      Get.snackbar("Info", "Sedang memuat data frame...");
+      return;
+    }
+
+    final List<String> ownedIds = userModel.value!.ownedBorderIds ?? [];
+    final List<FrameModel> ownedUserFrames =
+        frames.where((frame) => ownedIds.contains(frame.id)).toList();
+
+    if (ownedUserFrames.isEmpty) {
+      Get.snackbar("Info", "Anda belum memiliki border. Beli di toko!");
+      return;
+    }
+
+    print("Owned Border IDs for Dialog: $ownedIds");
+    print("Used Border ID for Dialog: ${userModel.value!.usedBorderIds}");
+    print("Owned Frames for Dialog Count: ${ownedUserFrames.length}");
+
+    Get.dialog(
+      ChooseFrameDialog(
+        ownedframes: ownedUserFrames,
+        usedFrame: userModel.value!.usedBorderIds ?? "",
+        onChoose: (selectedFrame) {
+          useBorder(selectedFrame);
+        },
+      ),
+    );
+  }
+
+  Future<void> useBorder(FrameModel selectedFrame) async {
+    if (userModel.value == null) {
+      Get.snackbar("Error", "Data user tidak ditemukan.");
+      return;
+    }
+
+    final userId = userModel.value!.id;
+    final borderId = selectedFrame.id;
+
+    Get.dialog(const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false);
+
+    try {
+      await _userService.updateUsedBorder(userId, borderId);
+
+      userModel.value!.usedBorderIds = borderId;
+      userModel.refresh();
+      _updateUsedFrame();
+
+      await SharedPreferenceHelper.saveUserData(
+        userId: userModel.value!.id.toString(),
+        point: userModel.value!.point,
+        userName: userModel.value!.username,
+        userEmail: userModel.value!.email,
+        avatar: userModel.value!.avatar ?? "",
+        name: userModel.value!.name,
+        ownedBorderIds: userModel.value!.ownedBorderIds ?? [],
+        usedBorderIds: userModel.value!.usedBorderIds,
+      );
+
+      Get.back();
+      Get.back();
+      Get.snackbar("Berhasil", "Border berhasil diganti!");
+    } catch (e) {
+      Get.back();
+      Get.snackbar("Gagal", "Gagal mengganti border: $e");
+      print("Error using border: $e");
+    }
+  }
+}
+
+extension IterableExtension<T> on Iterable<T> {
+  T? firstWhereOrNull(bool Function(T element) test) {
+    for (var element in this) {
+      if (test(element)) {
+        return element;
+      }
+    }
+    return null;
   }
 }

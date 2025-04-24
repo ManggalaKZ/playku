@@ -3,11 +3,11 @@ import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:playku/core.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AudioService.playBackgroundMusic();
-  await Supabase.initialize( 
+
+  await Supabase.initialize(
     url: 'https://lvqfhlohgdaqudfuivqb.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2cWZobG9oZ2RhcXVkZnVpdnFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxMTEwNDksImV4cCI6MjA1OTY4NzA0OX0.HezOkrAcGdyfdhRl53Ad-RTRAk5YlLiUz1UvJ7ltW1Y',

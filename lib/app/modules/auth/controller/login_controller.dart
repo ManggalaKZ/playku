@@ -70,8 +70,10 @@ class LoginController extends GetxController {
         userEmail: userData.email,
         avatar: userData.avatar ??
             "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+        ownedBorderIds: userData.ownedBorderIds,
+        usedBorderIds: userData.usedBorderIds,
       );
-      print("user yang disimpan setelah log ${userModel.value!.name}");
+      print("user yang disimpan setelah log ${userData.usedBorderIds}");
       Get.snackbar("Success", "Login berhasil", backgroundColor: AppColors.bg);
       Get.offAllNamed(Routes.HOME);
     } else {
