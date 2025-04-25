@@ -242,6 +242,8 @@ class HomeController extends GetxController {
         userEmail: userModel.value!.email,
         avatar: userModel.value!.avatar ?? "",
         name: userModel.value!.name,
+        usedBorderIds: userModel.value!.usedBorderIds,
+        ownedBorderIds: userModel.value!.ownedBorderIds,
       );
 
       Get.back();
@@ -404,8 +406,6 @@ class HomeController extends GetxController {
     );
   }
 
-  void fetchOwnedBorders() async {}
-
   void showChooseFrameDialog() {
     if (userModel.value == null) {
       Get.snackbar("Error", "Data user belum dimuat.");
@@ -474,6 +474,7 @@ class HomeController extends GetxController {
       Get.snackbar("Gagal", "Gagal mengganti border: $e");
     }
   }
+
 }
 
 extension IterableExtension<T> on Iterable<T> {

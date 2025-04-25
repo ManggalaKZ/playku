@@ -8,7 +8,7 @@ class TooltipController extends GetxController {
 
   void showTooltip(BuildContext context, String message, GlobalKey key) {
     if (isTooltipVisible.value) {
-      hideTooltip(); // Jika tooltip sudah muncul, tutup dulu sebelum menampilkan lagi.
+      hideTooltip(); 
       return;
     }
 
@@ -21,7 +21,7 @@ class TooltipController extends GetxController {
         builder: (context) => Stack(
           children: [
             GestureDetector(
-              onTap: hideTooltip, // Menutup tooltip jika area lain ditekan
+              onTap: hideTooltip, 
               behavior: HitTestBehavior.translucent,
               child: Container(
                 color: Colors.transparent,
@@ -54,7 +54,7 @@ class TooltipController extends GetxController {
       isTooltipVisible.value = true;
 
       Future.delayed(
-          Duration(seconds: 2), hideTooltip); // Auto-close setelah 2 detik
+          Duration(seconds: 2), hideTooltip); 
     });
   }
 

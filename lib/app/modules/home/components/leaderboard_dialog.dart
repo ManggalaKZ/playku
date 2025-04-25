@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:playku/core.dart';
 
-
 class LeaderboardDialog extends StatelessWidget {
   final HomeController controller;
 

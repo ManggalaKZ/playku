@@ -142,14 +142,13 @@ class UserService {
     try {
       await supabase.from('users').update({
         'usedBorderIds': borderId
-      }) // Pastikan 'used_border_id' adalah nama kolom yang benar
+      }) 
           .eq('id', userId);
 
       print("[SUCCESS] Used border berhasil diupdate untuk user $userId");
     } catch (e, stackTrace) {
       print("[ERROR] Gagal update used border: $e");
       print("[STACKTRACE] $stackTrace");
-      // Lemparkan kembali error agar bisa ditangani di controller
       throw Exception("Gagal memperbarui border yang digunakan: $e");
     }
   }
