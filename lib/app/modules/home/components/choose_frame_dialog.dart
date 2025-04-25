@@ -65,7 +65,7 @@ class ChooseFrameDialog extends StatelessWidget {
                           width: isUsed ? 3.0 : 1.0, 
                         ),
                         image: DecorationImage(
-                          image: AssetImage(frame.imagePath ?? 'URL_GAMBAR_DEFAULT_JIKA_NULL'), 
+                          image: AssetImage(frame.imagePath ?? ''), 
                           fit: BoxFit.cover,
                            
                            onError: (exception, stackTrace) {

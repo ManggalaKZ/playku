@@ -59,16 +59,10 @@ class HomeController extends GetxController {
 
       if (userDataMap != null) {
         userModel.value = UserModel.fromJson(userDataMap);
-        print("User berhasil dimuat: ${userModel.value!.id}");
-        print("Owned Borders Loaded: ${userModel.value!.ownedBorderIds}");
-        print("Used Border ID Loaded: ${userModel.value!.usedBorderIds}");
 
         userModel.refresh();
-      } else {
-        print("User data not found in SharedPreferences.");
-      }
+      } else {}
     } catch (e) {
-      print("Error loading user from prefs: $e");
     } finally {
       isLoading.value = false;
     }
@@ -80,7 +74,6 @@ class HomeController extends GetxController {
       leaderboard.value = await LeaderboardService.getLeaderboardAll();
       filterUserTopLeaderboard();
     } catch (e) {
-      print("Error: $e");
     } finally {
       isLoadingui.value = false;
     }
@@ -88,7 +81,6 @@ class HomeController extends GetxController {
 
   void filterUserTopLeaderboard() {
     if (userModel.value == null) {
-      print("DEBUG: UserModel kosong, tidak bisa filter leaderboard.");
       return;
     }
 
@@ -119,8 +111,6 @@ class HomeController extends GetxController {
       int userIndex = filtered.indexWhere((e) => e.userId == userId);
       if (userIndex != -1 && userIndex < 3) {
         int currentRank = userIndex + 1;
-        print(
-            "DEBUG: Ditemukan rank $currentRank di Game $gameId Level $level");
 
         if (bestRank == -1 || currentRank < bestRank) {
           bestRank = currentRank;
@@ -132,12 +122,9 @@ class HomeController extends GetxController {
     if (bestLeaderboard != null) {
       userTopLeaderboard.value = bestLeaderboard;
       userLeaderboardRank.value = bestRank;
-      print(
-          "✅ Rank terbaik user: $bestRank dari gameId ${bestLeaderboard.gameId} level ${bestLeaderboard.level}");
     } else {
       userTopLeaderboard.value = null;
       userLeaderboardRank.value = -1;
-      print("DEBUG: User tidak masuk top 3 leaderboard mana pun.");
     }
   }
 
@@ -329,7 +316,6 @@ class HomeController extends GetxController {
       _updateUsedFrame();
     } catch (e) {
       Get.snackbar("Error", "Gagal memuat data frame: $e");
-      print("Error fetching frames: $e");
     } finally {
       isLoadingFrames.value = false;
     }
@@ -338,7 +324,7 @@ class HomeController extends GetxController {
   void _updateUsedFrame() {
     if (userModel.value != null && frames.isNotEmpty) {
       final usedId = userModel.value!.usedBorderIds;
-      print("Attempting to find used frame with ID: $usedId");
+
       if (usedId != null && usedId.isNotEmpty) {
         try {
           final foundFrame = frames.firstWhereOrNull(
@@ -346,20 +332,14 @@ class HomeController extends GetxController {
           );
 
           if (foundFrame != null) {
-            print("Used frame found: ${foundFrame.name}");
             usedFrame.value = foundFrame;
           } else {
-            print(
-                "Used frame with ID $usedId not found in the fetched frames list.");
             usedFrame.value = null;
           }
         } catch (e) {
-          print("Error finding used frame: $e");
           usedFrame.value = null;
         }
       } else {
-        print("User has no used border ID set.");
-
         usedFrame.value = null;
       }
       usedFrame.refresh();
@@ -378,9 +358,6 @@ class HomeController extends GetxController {
     final userId = userModel.value!.id;
     final borderId = border.id;
     final borderPrice = border.price;
-    print("userid${userId}");
-    print("borderId${borderId}");
-    print("borderPrice${borderPrice}");
 
     Get.dialog(const Center(child: CircularProgressIndicator()),
         barrierDismissible: false);
@@ -393,8 +370,7 @@ class HomeController extends GetxController {
 
       if (updatedUser != null) {
         userModel.value = updatedUser;
-        print(
-            "Owned Borders after purchase: ${userModel.value?.ownedBorderIds}");
+
         userModel.refresh();
 
         Get.back();
@@ -415,7 +391,6 @@ class HomeController extends GetxController {
       Get.snackbar("Info", "Tidak ada frame tersedia saat ini.");
       return;
     }
-    print("Owned Border IDs: ${userModel.value!.ownedBorderIds}");
 
     Get.dialog(
       PurchaseFrameDialog(
@@ -449,10 +424,6 @@ class HomeController extends GetxController {
       Get.snackbar("Info", "Anda belum memiliki border. Beli di toko!");
       return;
     }
-
-    print("Owned Border IDs for Dialog: $ownedIds");
-    print("Used Border ID for Dialog: ${userModel.value!.usedBorderIds}");
-    print("Owned Frames for Dialog Count: ${ownedUserFrames.length}");
 
     Get.dialog(
       ChooseFrameDialog(
@@ -501,7 +472,6 @@ class HomeController extends GetxController {
     } catch (e) {
       Get.back();
       Get.snackbar("Gagal", "Gagal mengganti border: $e");
-      print("Error using border: $e");
     }
   }
 }
