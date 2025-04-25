@@ -10,7 +10,7 @@ class SharedPreferenceHelper {
   static const String _keyPoint = "point";
   static const String _keyavatar = "avatar";
   static const String _keyusedBorder = "usedBorderIds";
-  static const String _keyOwnedBorderIds = 'ownedBorderIds'; // Key baru
+  static const String _keyOwnedBorderIds = 'ownedBorderIds'; 
 
   static Future<void> saveUserData({
     required String userId,

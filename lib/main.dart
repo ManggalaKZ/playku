@@ -6,7 +6,6 @@ import 'package:playku/core.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AudioService.playBackgroundMusic();
-
   await Supabase.initialize(
     url: 'https://lvqfhlohgdaqudfuivqb.supabase.co',
     anonKey:

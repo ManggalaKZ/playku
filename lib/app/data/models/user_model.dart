@@ -6,8 +6,8 @@ class UserModel {
   final String? password;
   final String? avatar;
   int point;
-  final List<String>? ownedBorderIds; // Daftar ID border yang dimiliki
-  String? usedBorderIds; // Daftar ID border yang dimiliki
+  final List<String>? ownedBorderIds;
+  String? usedBorderIds; 
 
   UserModel({
     required this.id,
@@ -17,15 +17,13 @@ class UserModel {
     this.password,
     this.avatar,
     required this.point,
-    this.ownedBorderIds, // Jadikan required, tapi bisa diisi list kosong
-    this.usedBorderIds, // Jadikan required, tapi bisa diisi list kosong
+    this.ownedBorderIds, 
+    this.usedBorderIds, 
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    // Logika parsing untuk ownedBorderIds, default ke list kosong jika null/tidak ada
     List<String> borders = [];
     if (json['ownedBorderIds'] != null && json['ownedBorderIds'] is List) {
-      // Pastikan semua elemen dikonversi ke String
       borders = List<String>.from(
           json['ownedBorderIds'].map((item) => item.toString()));
     }
@@ -40,10 +38,8 @@ class UserModel {
       point: json['point'] is int
           ? json['point']
           : int.tryParse(json['point']?.toString() ?? '0') ?? 0,
-      // Assign hasil parsing (bisa jadi list kosong)
       ownedBorderIds: borders,
       usedBorderIds: json['usedBorderIds'] ?? "",
-      // Assign hasil parsing (bisa jadi list kosong)
     );
   }
 
@@ -54,13 +50,13 @@ class UserModel {
       'name': name,
       'email': email,
       'password':
-          password, // Sebaiknya tidak mengirim password kembali ke client
+          password, 
       'avatar': avatar,
       'point': point,
       'ownedBorderIds':
-          ownedBorderIds, // Sertakan saat mengirim data (jika perlu)
+          ownedBorderIds, 
       'usedBorderIds':
-          usedBorderIds, // Sertakan saat mengirim data (jika perlu)
+          usedBorderIds,
     };
   }
 
@@ -72,19 +68,19 @@ class UserModel {
     String? password,
     String? avatar,
     int? point,
-    List<String>? ownedBorderIds, // Tambahkan parameter
-    String? usedBorderIds, // Tambahkan parameter
+    List<String>? ownedBorderIds,
+    String? usedBorderIds,
   }) {
     return UserModel(
       id: id ?? this.id,
       username: username ?? this.username,
       name: name ?? this.name,
       email: email ?? this.email,
-      password: password ?? this.password, // Hati-hati dengan password
+      password: password ?? this.password,
       avatar: avatar ?? this.avatar,
       point: point ?? this.point,
-      ownedBorderIds: ownedBorderIds ?? this.ownedBorderIds, // Assign nilai
-      usedBorderIds: usedBorderIds ?? this.usedBorderIds, // Assign nilai
+      ownedBorderIds: ownedBorderIds ?? this.ownedBorderIds, 
+      usedBorderIds: usedBorderIds ?? this.usedBorderIds, 
     );
   }
 }
