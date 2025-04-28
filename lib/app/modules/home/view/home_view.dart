@@ -272,11 +272,31 @@ class HomeView extends GetView<HomeController> {
                     ),
                     onBackgroundImageError: (_, __) => const Icon(Icons.error),
                   ),
-                  Image.asset(
+                  Image.network(
                     frame.imagePath,
                     width: 120,
                     height: 120,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => const Center(
+                        child: Icon(Icons.error, size: 30, color: Colors.grey)),
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        // Jika loading selesai, tampilkan gambar
+                        return child;
+                      } else {
+                        // Jika masih loading, tampilkan CircularProgressIndicator
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null, // Tampilkan progress jika memungkinkan
+                            strokeWidth: 2.0, // Atur ketebalan spinner
+                          ),
+                        );
+                      }
+                    },
                   ),
                   Positioned(
                     bottom: 0,
@@ -375,7 +395,9 @@ class HomeView extends GetView<HomeController> {
 
               return Expanded(
                 child: _buildStatItem(
-                    controller.cekPoint(), "POINTS", Icons.monetization_on),
+                    controller.userModel.value?.point?.toString() ?? "0",
+                    "POINTS",
+                    Icons.monetization_on),
               );
             }),
             Container(

@@ -16,7 +16,10 @@ class GameWinScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () async {
-              Get.back();
+              final homeController = Get.find<HomeController>();
+              homeController.loadUserFromPrefs();
+              // Navigasi ke Home
+              Get.offAllNamed(Routes.HOME);
               controller.resetGame();
               game.gameTimer.reset();
               await Future.delayed(Duration(milliseconds: 1200));

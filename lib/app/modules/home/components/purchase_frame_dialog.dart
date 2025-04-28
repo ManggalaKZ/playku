@@ -21,6 +21,25 @@ class PurchaseFrameDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<FrameModel> sortedFrames = List.from(frames);
+
+    // Urutkan list
+    sortedFrames.sort((a, b) {
+      final bool aOwned = ownedBorderIds.contains(a.id);
+      final bool bOwned = ownedBorderIds.contains(b.id);
+
+      if (aOwned && !bOwned) {
+        return 1; // a (owned) diletakkan setelah b (not owned)
+      } else if (!aOwned && bOwned) {
+        return -1; // a (not owned) diletakkan sebelum b (owned)
+      } else if (!aOwned && !bOwned) {
+        // Jika keduanya belum dimiliki, urutkan berdasarkan harga (termahal dulu)
+        return b.price.compareTo(a.price);
+      } else {
+        // Jika keduanya sudah dimiliki, urutkan berdasarkan nama (opsional, agar konsisten)
+        return a.name.compareTo(b.name);
+      }
+    });
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
@@ -56,9 +75,9 @@ class PurchaseFrameDialog extends StatelessWidget {
                     mainAxisSpacing: 10,
                     childAspectRatio: 0.7,
                   ),
-                  itemCount: frames.length,
+                  itemCount: sortedFrames.length,
                   itemBuilder: (context, index) {
-                    final frame = frames[index];
+                    final frame = sortedFrames[index];
                     final bool canAfford = userPoints >= frame.price;
                     final bool alreadyOwned = ownedBorderIds.contains(frame.id);
 
@@ -73,9 +92,33 @@ class PurchaseFrameDialog extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Expanded(
-                              child: Image.asset(
+                              child: Image.network(
                                 frame.imagePath,
                                 fit: BoxFit.contain,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    // Jika loading selesai, tampilkan gambar
+                                    return child;
+                                  } else {
+                                    // Jika masih loading, tampilkan CircularProgressIndicator
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null, // Tampilkan progress jika memungkinkan
+                                        strokeWidth:
+                                            2.0, // Atur ketebalan spinner
+                                      ),
+                                    );
+                                  }
+                                },
                                 errorBuilder: (context, error, stackTrace) =>
                                     const Center(
                                         child: Icon(Icons.error,
@@ -93,30 +136,33 @@ class PurchaseFrameDialog extends StatelessWidget {
                             ),
                             Text('${frame.price} Point'),
                             const SizedBox(height: 4),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: alreadyOwned
-                                    ? Colors.grey
-                                    : (canAfford
-                                        ? AppColors.secondary
-                                        : Colors.redAccent),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 4),
-                                textStyle: const TextStyle(fontSize: 12),
-                              ),
-                              onPressed: alreadyOwned || !canAfford
-                                  ? null
-                                  : () {
-                                      _showConfirmationDialog(context, frame);
-                                    },
-                              child: Text(
-                                alreadyOwned
-                                    ? "Dimiliki"
-                                    : (canAfford ? "Beli" : "Poin Kurang"),
-                                style: GoogleFonts.sawarabiGothic(
-                                    color: Colors.white),
-                              ),
-                            ),
+                            alreadyOwned
+                                ? Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 30,
+                                  )
+                                : ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: canAfford
+                                          ? AppColors.secondary
+                                          : Colors.redAccent,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 4),
+                                      textStyle: const TextStyle(fontSize: 12),
+                                    ),
+                                    onPressed: canAfford
+                                        ? () {
+                                            _showConfirmationDialog(
+                                                context, frame);
+                                          }
+                                        : null,
+                                    child: Text(
+                                      canAfford ? "Beli" : "Poin Kurang",
+                                      style: GoogleFonts.sawarabiGothic(
+                                          color: Colors.white),
+                                    ),
+                                  )
                           ],
                         ),
                       ),
@@ -165,7 +211,7 @@ class PurchaseFrameDialog extends StatelessWidget {
             SizedBox(
               height: 100,
               width: 100,
-              child: Image.asset(
+              child: Image.network(
                 frame.imagePath,
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {

@@ -62,6 +62,7 @@ class GameOverScreen extends StatelessWidget {
                   onPressed: () {
                     AudioService.playButtonSound();
                     game.controller.exitGame();
+                    
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.secondary,

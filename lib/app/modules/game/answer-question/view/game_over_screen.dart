@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:playku/core.dart';
-
 
 class GameOverScreen extends StatelessWidget {
   final AnswerQuestionGame game;
@@ -66,7 +66,10 @@ class GameOverScreen extends StatelessWidget {
                   onPressed: () {
                     AudioService.playButtonSound();
                     game.exitGame();
-                    Navigator.pop(context);
+                    final homeController = Get.find<HomeController>();
+                    homeController.loadUserFromPrefs();
+                    // Navigasi ke Home
+                    Get.offAllNamed(Routes.HOME);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.secondary,

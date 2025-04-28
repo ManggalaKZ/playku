@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:playku/core.dart';
 
-
 class LeaderboardService {
   static const String baseUrl =
       'https://lvqfhlohgdaqudfuivqb.supabase.co/rest/v1/';

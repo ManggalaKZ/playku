@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:playku/app/data/models/frame_model.dart'; 
-import 'package:playku/app/data/services/audio_service.dart'; 
-import 'package:playku/theme.dart'; 
+import 'package:playku/app/data/models/frame_model.dart';
+import 'package:playku/app/data/services/audio_service.dart';
+import 'package:playku/theme.dart';
 
 class ChooseFrameDialog extends StatelessWidget {
   final List<FrameModel> ownedframes;
-  final String usedFrame; 
+  final String usedFrame;
   final Function(FrameModel) onChoose;
 
   const ChooseFrameDialog({
@@ -28,24 +28,22 @@ class ChooseFrameDialog extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min, 
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Pilih Border Anda", 
+              "Pilih Border Anda",
               style: GoogleFonts.sawarabiGothic(
                   fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-
-            
-            Flexible( 
+            Flexible(
               child: GridView.builder(
-                shrinkWrap: true, 
+                shrinkWrap: true,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, 
+                  crossAxisCount: 3,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  childAspectRatio: 1, 
+                  childAspectRatio: 1,
                 ),
                 itemCount: ownedframes.length,
                 itemBuilder: (context, index) {
@@ -55,26 +53,25 @@ class ChooseFrameDialog extends StatelessWidget {
                   return GestureDetector(
                     onTap: () {
                       AudioService.playButtonSound();
-                      onChoose(frame); 
+                      onChoose(frame);
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: isUsed ? AppColors.secondary : Colors.grey.shade300, 
-                          width: isUsed ? 3.0 : 1.0, 
+                          color: isUsed
+                              ? AppColors.secondary
+                              : Colors.grey.shade300,
+                          width: isUsed ? 3.0 : 1.0,
                         ),
                         image: DecorationImage(
-                          image: AssetImage(frame.imagePath ?? ''), 
+                          image: NetworkImage(frame.imagePath ?? ''),
                           fit: BoxFit.cover,
-                           
-                           onError: (exception, stackTrace) {
-                             print('Error loading image: $exception');
-                             
-                           },
+                          onError: (exception, stackTrace) {
+                            print('Error loading image: $exception');
+                          },
                         ),
                       ),
-                      
                       child: isUsed
                           ? Align(
                               alignment: Alignment.bottomRight,
@@ -84,7 +81,8 @@ class ChooseFrameDialog extends StatelessWidget {
                                   color: AppColors.secondary.withOpacity(0.8),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.check, color: Colors.white, size: 16),
+                                child: const Icon(Icons.check,
+                                    color: Colors.white, size: 16),
                               ),
                             )
                           : null,
@@ -93,9 +91,7 @@ class ChooseFrameDialog extends StatelessWidget {
                 },
               ),
             ),
-
             const SizedBox(height: 16),
-            
             Align(
               alignment: Alignment.bottomCenter,
               child: TextButton(

@@ -29,7 +29,14 @@ class BoardComponentMinesweeper extends PositionComponent with HasGameRef {
         final tile = controller.tiles[row][col];
         final tileComponent = TileComponent(
           tile: tile,
-          onTileTapped: (_) => controller.onTileTapped(row, col),
+          onTileTapped: (_) {
+            final context = Get.context;
+            if (context != null) {
+              controller.onTileTapped(row, col, context);
+            } else {
+              // Optionally handle the null context case, e.g., log or ignore
+            }
+          },
           onTileLongPressed: (_) => controller.toggleFlag(row, col),
         )
           ..position =

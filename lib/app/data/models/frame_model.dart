@@ -15,7 +15,7 @@ class FrameModel {
     return FrameModel(
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? 'Tanpa Nama',
-      imagePath: json['asset_url'] as String? ?? '',
+      imagePath: json['link_url'] as String? ?? '',
       price: json['price'] is int
           ? json['price']
           : int.tryParse(json['price']?.toString() ?? '0') ?? 0,

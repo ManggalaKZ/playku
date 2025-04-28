@@ -6,9 +6,9 @@ class Leaderboard {
   int timePlay;
   String played_at;
   String level;
-  final String username; 
-  final String gameName;
-  final String avatar; 
+  String username;
+  String gameName;
+  String avatar;
 
   Leaderboard({
     this.id,

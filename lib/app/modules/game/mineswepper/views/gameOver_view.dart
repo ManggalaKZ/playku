@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:playku/core.dart';
 
-
 class GameOverScreenMinesweeper extends StatelessWidget {
   final game = Get.find<MinesweeperGame>();
   final controller = Get.find<MinesweeperController>();
@@ -17,7 +16,10 @@ class GameOverScreenMinesweeper extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () async {
-              Get.back();
+              final homeController = Get.find<HomeController>();
+              homeController.loadUserFromPrefs();
+              // Navigasi ke Home
+              Get.offAllNamed(Routes.HOME);
               controller.resetGame();
               game.gameTimer.reset();
               await Future.delayed(Duration(milliseconds: 1200));

@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flame/game.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:playku/app/widgets/dialog_new_leaderboard/dialog_new_leaderboard.dart';
 import 'package:playku/core.dart';
 import 'package:playku/core_game.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class MinesweeperController extends GetxController {
   late int rows;
@@ -68,7 +69,7 @@ class MinesweeperController extends GetxController {
     elapsedSeconds = 0;
   }
 
-  void onTileTapped(int row, int col) {
+  void onTileTapped(int row, int col, BuildContext context) {
     if (gameOver) return;
     final tile = tiles[row][col];
     if (tile.isOpened || tile.isFlagged) return;
@@ -96,14 +97,14 @@ class MinesweeperController extends GetxController {
         lastTime = game.getElapsedTimeInSeconds();
         gameOver = true;
         onGameEndCallback!(true);
-        addData();
+        addData(context); // <-- Kirim context di sini
       }
     }
 
     update();
   }
 
-  void addData() {
+  void addData(BuildContext context) {
     int finalTime = lastTime;
     int finalScore = 10;
     String userId = userModel.value!.id ?? "";
@@ -128,7 +129,7 @@ class MinesweeperController extends GetxController {
     ).then((success) async {
       if (success) {
         print("Data gameplay berhasil dikirim!");
-        int? newPoint = await PointService.updateUserPoint(userId);
+        int? newPoint = await PointService.updateUserPoint(userId, 5);
         if (newPoint != null) {
           userModel.value = userModel.value!.copyWith(point: newPoint);
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -161,7 +162,8 @@ class MinesweeperController extends GetxController {
     String levels = selectedLevel.value.toString().split('.').last;
 
     try {
-      leaderboard.value = await LeaderboardService.getLeaderboard(gameId, levels);
+      leaderboard.value =
+          await LeaderboardService.getLeaderboard(gameId, levels);
     } catch (e) {
       print("Error: $e");
     }
@@ -251,7 +253,56 @@ class MinesweeperController extends GetxController {
   }
 
   Future<void> addScore(Leaderboard entry) async {
+    // 1. Ambil leaderboard sebelum update
+    List<Leaderboard> before =
+        await LeaderboardService.getLeaderboard(entry.gameId, entry.level);
+
+    // 2. Update leaderboard
     await LeaderboardService.updateLeaderboard(entry);
-    await loadLeaderboard(entry.gameId);
+
+    // 3. Ambil leaderboard setelah update
+    List<Leaderboard> after =
+        await LeaderboardService.getLeaderboard(entry.gameId, entry.level);
+
+    bool isChanged = false;
+    String message = "";
+
+    // Cek jika ada user baru yang masuk leaderboard atau memperbaiki waktunya
+    for (var afterEntry in after) {
+      var beforeEntry = before.firstWhereOrNull((b) =>
+          b.userId == afterEntry.userId && b.timePlay == afterEntry.timePlay);
+      if (beforeEntry == null) {
+        isChanged = true;
+        int rank = after.indexWhere((a) =>
+                a.userId == afterEntry.userId &&
+                a.timePlay == afterEntry.timePlay) +
+            1;
+        message +=
+            "User ${afterEntry.userId} mendapat leaderboard baru (Rank: $rank, Time: ${afterEntry.timePlay} detik)\n";
+      }
+    }
+
+    // Cek jika ada skor user yang keluar leaderboard (termasuk jika digeser oleh skor barunya sendiri)
+    for (var beforeEntry in before) {
+      var afterEntry = after.firstWhereOrNull((a) =>
+          a.userId == beforeEntry.userId && a.timePlay == beforeEntry.timePlay);
+      if (afterEntry == null) {
+        isChanged = true;
+        message +=
+            "Skor ${beforeEntry.timePlay} detik milik user ${beforeEntry.userId} keluar dari leaderboard\n";
+      }
+    }
+
+    if (isChanged) {
+      // Cari index user pada leaderboard terbaru
+      int? newIndex = after.indexWhere(
+          (a) => a.userId == entry.userId && a.timePlay == entry.timePlay);
+      DialogNewLeaderboard.showLeaderboardCongrats(
+        "Minesweeper",
+        beforeRanks: before,
+        afterRanks: after,
+        newRankIndex: newIndex >= 0 ? newIndex : null,
+      );
+    }
   }
 }

@@ -12,7 +12,7 @@ class PointService {
     'Content-Type': 'application/json',
   };
 
-  static Future<int?> updateUserPoint(String userId) async {
+  static Future<int?> updateUserPoint(String userId, int point) async {
     final supabase = Supabase.instance.client;
 
     try {
@@ -20,7 +20,7 @@ class PointService {
           await supabase.from('users').select('*').eq('id', userId).single();
 
       int currentPoint = response['point'] ?? 0;
-      int newPoint = currentPoint + 5;
+      int newPoint = currentPoint + point;
 
       await supabase.from('users').update({'point': newPoint}).eq('id', userId);
       await SharedPreferenceHelper.saveUserData(
