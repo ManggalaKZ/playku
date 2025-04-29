@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:playku/app/data/services/point_service.dart';
 import 'package:playku/app/data/services/user_service.dart';
 import 'package:playku/app/modules/home/controller/home_controller.dart';
 import 'package:playku/app/widgets/dialog_new_leaderboard/leaderboard_rank_list.dart';
+import 'package:playku/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:playku/app/data/models/leaderboard_model.dart';
 
@@ -23,7 +25,8 @@ class AnimatedLeaderboardDialog extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AnimatedLeaderboardDialog> createState() => _AnimatedLeaderboardDialogState();
+  State<AnimatedLeaderboardDialog> createState() =>
+      _AnimatedLeaderboardDialogState();
 }
 
 class _AnimatedLeaderboardDialogState extends State<AnimatedLeaderboardDialog>
@@ -34,17 +37,24 @@ class _AnimatedLeaderboardDialogState extends State<AnimatedLeaderboardDialog>
   List<Leaderboard> beforeRanksWithUser = [];
   List<Leaderboard> afterRanksWithUser = [];
   int? pointTambahan;
+  bool isDataFetched = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 800));
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 800));
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _fetchUsersForLeaderboard();
     addPointUser();
   }
 
   Future<void> _setPoint() async {
+    if (widget.newRankIndex == null) {
+      print("Error: newRankIndex is null");
+      pointTambahan = null;
+      return;
+    }
     int rank = widget.newRankIndex! + 1;
     if (rank == 1) {
       pointTambahan = 100;
@@ -58,6 +68,16 @@ class _AnimatedLeaderboardDialogState extends State<AnimatedLeaderboardDialog>
   Future<void> addPointUser() async {
     HomeController homeController = Get.find<HomeController>();
     await _setPoint();
+    print("user model value id ${homeController.userModel.value?.id}");
+    print("point tambahan $pointTambahan");
+    if (homeController.userModel.value == null) {
+      print("Error: userModel.value is null");
+      return;
+    }
+    if (pointTambahan == null) {
+      print("Error: pointTambahan is null");
+      return;
+    }
     int? newPoint = await PointService.updateUserPoint(
         homeController.userModel.value!.id, pointTambahan!);
     if (newPoint != null) {
@@ -75,6 +95,9 @@ class _AnimatedLeaderboardDialogState extends State<AnimatedLeaderboardDialog>
   Future<void> _fetchUsersForLeaderboard() async {
     Future<List<Leaderboard>> updateUserData(List<Leaderboard> ranks) async {
       List<Leaderboard> updatedRanks = [];
+      print("Fetching user details for leaderboard...");
+      print("Original rank list: ${ranks.map((e) => e.userId).toList()}");
+
       for (var entry in ranks) {
         try {
           final userDetails = await UserService.getUserDetails(entry.userId);
@@ -92,8 +115,16 @@ class _AnimatedLeaderboardDialogState extends State<AnimatedLeaderboardDialog>
     beforeRanksWithUser = await updateUserData(widget.beforeRanks);
     afterRanksWithUser = await updateUserData(widget.afterRanks);
 
+    // Jika leaderboard sebelumnya kosong, tampilkan animasi dari list kosong ke list baru
+    if (beforeRanksWithUser.isEmpty && afterRanksWithUser.isNotEmpty) {
+      // beforeRanksWithUser tetap kosong (tidak perlu diisi dummy), afterRanksWithUser berisi user baru
+      // Animasi akan berjalan dari kosong ke ada user
+    }
+
     if (mounted) {
-      setState(() {});
+      setState(() {
+        isDataFetched = true;
+      });
       Future.delayed(Duration(milliseconds: 900), () {
         if (mounted) {
           setState(() {
@@ -113,53 +144,147 @@ class _AnimatedLeaderboardDialogState extends State<AnimatedLeaderboardDialog>
 
   @override
   Widget build(BuildContext context) {
-    bool isLoading = beforeRanksWithUser.isEmpty || afterRanksWithUser.isEmpty;
+    bool isLoading = !isDataFetched;
+    final int itemCount =
+        showAfter ? afterRanksWithUser.length : beforeRanksWithUser.length;
+
+    final double calculatedHeight = (itemCount * 70).clamp(70, 240).toDouble();
+
     return AlertDialog(
-      title: Text('Selamat!'),
+      backgroundColor: AppColors.primary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+      title: Center(
+        child: Text(
+          '🎉 Selamat! 🎉',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
       content: isLoading
-          ? SizedBox(
+          ? const SizedBox(
               height: 100,
-              child: Center(child: CircularProgressIndicator()),
+              child:
+                  Center(child: CircularProgressIndicator(color: Colors.white)),
             )
           : SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Perubahan leaderboard di game ${widget.gameName},${widget.newRankIndex}'),
-                  SizedBox(height: 16),
-                  Text('anda mendapatkan ${pointTambahan} poin! karena anda berada di rank ${widget.newRankIndex! + 1}'),
-                  SizedBox(height: 16),
-                  SizedBox(
-                    height: (beforeRanksWithUser.length * 70).toDouble(),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        AnimatedOpacity(
-                          opacity: showAfter ? 0.0 : 1.0,
-                          duration: Duration(milliseconds: 600),
-                          child: LeaderboardRankList(ranks: beforeRanksWithUser),
-                        ),
-                        AnimatedOpacity(
-                          opacity: showAfter ? 1.0 : 0.0,
-                          duration: Duration(milliseconds: 600),
-                          child: ScaleTransition(
-                            scale: _animation,
-                            child: LeaderboardRankList(
-                              ranks: afterRanksWithUser,
-                              highlightIndex: widget.newRankIndex,
-                            ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.7,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.newRankIndex != null)
+                      Text(
+                        '🏆 Anda mendapatkan $pointTambahan Poin!',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.sawarabiGothic(
+                            color: Colors.white, fontSize: 20),
+                      ),
+                    SizedBox(height: 16),
+                    if (beforeRanksWithUser.isNotEmpty ||
+                        afterRanksWithUser.isNotEmpty)
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 600),
+                        child: SizedBox(
+                          key: ValueKey(showAfter),
+                          height: calculatedHeight,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              AnimatedOpacity(
+                                opacity: showAfter ? 0.0 : 1.0,
+                                duration: const Duration(milliseconds: 600),
+                                child: LeaderboardRankList(
+                                    ranks: beforeRanksWithUser),
+                              ),
+                              AnimatedOpacity(
+                                opacity: showAfter ? 1.0 : 0.0,
+                                duration: const Duration(milliseconds: 600),
+                                child: ScaleTransition(
+                                  scale: _animation,
+                                  child: LeaderboardRankList(
+                                    ranks: afterRanksWithUser,
+                                    highlightIndex: widget.newRankIndex,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ],
+                      )
+                    else
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 600),
+                        child: SizedBox(
+                          key: ValueKey(showAfter),
+                          height: calculatedHeight,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              AnimatedOpacity(
+                                opacity: showAfter ? 0.0 : 1.0,
+                                duration: const Duration(milliseconds: 600),
+                                child: LeaderboardRankList(
+                                    ranks: beforeRanksWithUser),
+                              ),
+                              AnimatedOpacity(
+                                opacity: showAfter ? 1.0 : 0.0,
+                                duration: const Duration(milliseconds: 600),
+                                child: ScaleTransition(
+                                  scale: _animation,
+                                  child: LeaderboardRankList(
+                                    ranks: afterRanksWithUser,
+                                    highlightIndex: widget.newRankIndex,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                  ],
+                ),
               ),
             ),
       actions: [
-        TextButton(
-          onPressed: () => Get.back(),
-          child: Text('OK'),
+        Center(
+          child: TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              backgroundColor: AppColors.secondary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            onPressed: () => Get.back(),
+            child: Container(
+              width: Get.width * 0.29,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center, // Tambahkan ini
+                crossAxisAlignment: CrossAxisAlignment.center, // Tambahkan in,
+                spacing: 5,
+                children: [
+                  Text(
+                    'Klaim $pointTambahan',
+                    maxLines: 1,
+                    style: GoogleFonts.sawarabiGothic(fontSize: 18),
+                  ),
+                  Icon(
+                    Icons.monetization_on,
+                    size: 24.0,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ), // Close the dialog after animation,
+          ),
         ),
       ],
     );

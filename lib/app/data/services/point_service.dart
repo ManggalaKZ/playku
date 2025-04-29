@@ -18,6 +18,16 @@ class PointService {
     try {
       final response =
           await supabase.from('users').select('*').eq('id', userId).single();
+      print("Supabase user response: $response");
+      if (response == null ||
+          response['id'] == null ||
+          response['username'] == null ||
+          response['name'] == null ||
+          response['email'] == null ||
+          response['point'] == null) {
+        print("Error: Data user tidak lengkap atau user tidak ditemukan.");
+        return null;
+      }
 
       int currentPoint = response['point'] ?? 0;
       int newPoint = currentPoint + point;

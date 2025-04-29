@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:playku/app/widgets/dialog_new_leaderboard/dialog_new_leaderboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -124,7 +125,7 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
     int finalTime = convertTimeToSeconds(lastElapsedTime);
     int finalScore = correctAnswers;
     String userId = userModel.value!.id ?? "";
-    String now = DateTime.now().toString();
+    String now = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
     String levels =
         gamecontroller.selectedLevel.value.toString().split('.').last;
     loadLeaderboard(controller.idgame);
@@ -140,6 +141,8 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
       if (success) {
         print("Data gameplay berhasil dikirim!");
         lastElapsedTime = "00:00";
+        print("user id yang di tambah 5 $userId");
+
         int? newPoint = await PointService.updateUserPoint(userId, 5);
         if (newPoint != null) {
           userModel.value = userModel.value!.copyWith(point: newPoint);
@@ -195,38 +198,35 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
         await LeaderboardService.getLeaderboard(entry.gameId, entry.level);
 
     bool isChanged = false;
-    String message = "";
 
-    // Cek jika ada user baru yang masuk leaderboard atau memperbaiki waktunya
-    for (var afterEntry in after) {
-      var beforeEntry = before.firstWhereOrNull((b) =>
-          b.userId == afterEntry.userId && b.timePlay == afterEntry.timePlay);
-      if (beforeEntry == null) {
-        isChanged = true;
-        int rank = after.indexWhere((a) =>
-                a.userId == afterEntry.userId &&
-                a.timePlay == afterEntry.timePlay) +
-            1;
-        message +=
-            "User ${afterEntry.userId} mendapat leaderboard baru (Rank: $rank, Time: ${afterEntry.timePlay} detik)\n";
-      }
+    // Cek apakah skor user ini baru muncul di leaderboard
+    bool wasInBefore = before
+        .any((b) => b.userId == entry.userId && b.timePlay == entry.timePlay);
+    bool isInAfter = after
+        .any((a) => a.userId == entry.userId && a.timePlay == entry.timePlay);
+
+    if (!wasInBefore && isInAfter) {
+      isChanged = true;
     }
 
-    // Cek jika ada skor user yang keluar leaderboard (termasuk jika digeser oleh skor barunya sendiri)
+    // Cek jika ada entri di before yang hilang dari after (misalnya tergeser keluar leaderboard)
     for (var beforeEntry in before) {
-      var afterEntry = after.firstWhereOrNull((a) =>
-          a.userId == beforeEntry.userId && a.timePlay == beforeEntry.timePlay);
-      if (afterEntry == null) {
+      bool stillExists = after.any((a) =>
+          a.userId == beforeEntry.userId &&
+          a.timePlay == beforeEntry.timePlay &&
+          a.played_at == beforeEntry.played_at);
+
+      if (!stillExists) {
         isChanged = true;
-        message +=
-            "Skor ${beforeEntry.timePlay} detik milik user ${beforeEntry.userId} keluar dari leaderboard\n";
+        break;
       }
     }
 
     if (isChanged) {
-      // Cari index user pada leaderboard terbaru
-      int? newIndex = after.indexWhere((a) =>
-        a.userId == entry.userId && a.timePlay == entry.timePlay);
+      // Cari index baru user di leaderboard
+      int? newIndex = after.indexWhere(
+          (a) => a.userId == entry.userId && a.timePlay == entry.timePlay);
+
       DialogNewLeaderboard.showLeaderboardCongrats(
         "Minesweeper",
         beforeRanks: before,

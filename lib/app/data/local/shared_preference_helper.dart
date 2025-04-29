@@ -10,7 +10,7 @@ class SharedPreferenceHelper {
   static const String _keyPoint = "point";
   static const String _keyavatar = "avatar";
   static const String _keyusedBorder = "usedBorderIds";
-  static const String _keyOwnedBorderIds = 'ownedBorderIds'; 
+  static const String _keyOwnedBorderIds = 'ownedBorderIds';
 
   static Future<void> saveUserData({
     required String userId,
@@ -29,8 +29,12 @@ class SharedPreferenceHelper {
     await prefs.setString(_keyName, name);
     await prefs.setString(_keyavatar, avatar);
     await prefs.setString(_keyUserEmail, userEmail);
-    await prefs.setString(_keyusedBorder, usedBorderIds!);
-    await prefs.setString(_keyOwnedBorderIds, jsonEncode(ownedBorderIds));
+    if (usedBorderIds != null) {
+      await prefs.setString(_keyusedBorder, usedBorderIds);
+    }
+    if (ownedBorderIds != null) {
+      await prefs.setString(_keyOwnedBorderIds, jsonEncode(ownedBorderIds));
+    }
   }
 
   static Future<Map<String, dynamic>?> getUserData() async {
@@ -44,8 +48,7 @@ class SharedPreferenceHelper {
         "avatar": prefs.getString(_keyavatar),
         "email": prefs.getString(_keyUserEmail),
         "usedBorderIds": prefs.getString(_keyusedBorder),
-        'ownedBorderIds': List<String>.from(
-            jsonDecode(prefs.getString(_keyOwnedBorderIds) ?? '[]')),
+        'ownedBorderIds': _safeDecodeList(prefs.getString(_keyOwnedBorderIds)),
       };
     }
     return null;
@@ -60,6 +63,18 @@ class SharedPreferenceHelper {
     await prefs.remove(_keyName);
     await prefs.remove(_keyavatar);
     await prefs.remove(_keyusedBorder);
-    await prefs.remove(_keyOwnedBorderIds); 
+    await prefs.remove(_keyOwnedBorderIds);
+  }
+
+  static List<String> _safeDecodeList(String? jsonString) {
+    try {
+      final data = jsonDecode(jsonString ?? '[]');
+      if (data is List) {
+        return List<String>.from(data);
+      }
+    } catch (e) {
+      print("❌ Error decoding ownedBorderIds: $e");
+    }
+    return [];
   }
 }

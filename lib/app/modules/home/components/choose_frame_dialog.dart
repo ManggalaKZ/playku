@@ -24,8 +24,13 @@ class ChooseFrameDialog extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          gradient: LinearGradient(
+            colors: [AppColors.primary, AppColors.secondary],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white, width: 2),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -33,7 +38,9 @@ class ChooseFrameDialog extends StatelessWidget {
             Text(
               "Pilih Border Anda",
               style: GoogleFonts.sawarabiGothic(
-                  fontSize: 18, fontWeight: FontWeight.bold),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.whitePrimary),
             ),
             const SizedBox(height: 16),
             Flexible(
@@ -62,30 +69,42 @@ class ChooseFrameDialog extends StatelessWidget {
                           color: isUsed
                               ? AppColors.secondary
                               : Colors.grey.shade300,
-                          width: isUsed ? 3.0 : 1.0,
+                          width: isUsed ? 5.0 : 2.0,
                         ),
-                        image: DecorationImage(
-                          image: NetworkImage(frame.imagePath ?? ''),
-                          fit: BoxFit.cover,
-                          onError: (exception, stackTrace) {
-                            print('Error loading image: $exception');
-                          },
+                        color: const Color.fromARGB(29, 255, 255,
+                            255), // Tambahkan warna background transparan
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(
+                            isUsed ? 5.0 : 2.0), // Padding sesuai border
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            image: DecorationImage(
+                              image: NetworkImage(frame.imagePath ?? ''),
+                              fit: BoxFit.cover,
+                              onError: (exception, stackTrace) {
+                                print('Error loading image: $exception');
+                              },
+                            ),
+                          ),
+                          child: isUsed
+                              ? Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          AppColors.secondary.withOpacity(0.8),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.check,
+                                        color: Colors.white, size: 16),
+                                  ),
+                                )
+                              : null,
                         ),
                       ),
-                      child: isUsed
-                          ? Align(
-                              alignment: Alignment.bottomRight,
-                              child: Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  color: AppColors.secondary.withOpacity(0.8),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(Icons.check,
-                                    color: Colors.white, size: 16),
-                              ),
-                            )
-                          : null,
                     ),
                   );
                 },
@@ -94,23 +113,26 @@ class ChooseFrameDialog extends StatelessWidget {
             const SizedBox(height: 16),
             Align(
               alignment: Alignment.bottomCenter,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  backgroundColor: AppColors.secondary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    backgroundColor: Colors.redAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  AudioService.playButtonSound();
-                  Get.back();
-                },
-                child: Text(
-                  'Tutup',
-                  style:
-                      GoogleFonts.sawarabiGothic(color: AppColors.whitePrimary),
+                  onPressed: () {
+                    AudioService.playButtonSound();
+                    Get.back();
+                  },
+                  child: Text(
+                    'TUTUP',
+                    style: GoogleFonts.sawarabiGothic(
+                        color: AppColors.whitePrimary),
+                  ),
                 ),
               ),
             ),

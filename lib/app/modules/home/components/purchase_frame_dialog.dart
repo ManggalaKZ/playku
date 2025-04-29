@@ -45,8 +45,13 @@ class PurchaseFrameDialog extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          gradient: LinearGradient(
+            colors: [AppColors.primary, AppColors.secondary],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white, width: 2),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -54,12 +59,15 @@ class PurchaseFrameDialog extends StatelessWidget {
             Text(
               "Toko Border",
               style: GoogleFonts.sawarabiGothic(
-                  fontSize: 18, fontWeight: FontWeight.bold),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             const SizedBox(height: 8),
             Text(
               "Poin Anda: $userPoints",
-              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
+              style: GoogleFonts.poppins(
+                  fontSize: 14, color: AppColors.whitePrimary),
             ),
             const SizedBox(height: 16),
             Flexible(
@@ -174,23 +182,26 @@ class PurchaseFrameDialog extends StatelessWidget {
             const SizedBox(height: 16),
             Align(
               alignment: Alignment.bottomCenter,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  backgroundColor: AppColors.secondary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    backgroundColor: Colors.redAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  AudioService.playButtonSound();
-                  Get.back();
-                },
-                child: Text(
-                  'Tutup',
-                  style:
-                      GoogleFonts.sawarabiGothic(color: AppColors.whitePrimary),
+                  onPressed: () {
+                    AudioService.playButtonSound();
+                    Get.back();
+                  },
+                  child: Text(
+                    'TUTUP',
+                    style: GoogleFonts.sawarabiGothic(
+                        color: AppColors.whitePrimary),
+                  ),
                 ),
               ),
             ),

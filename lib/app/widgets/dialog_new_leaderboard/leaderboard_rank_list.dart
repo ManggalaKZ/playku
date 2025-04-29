@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:playku/app/data/models/leaderboard_model.dart';
+import 'package:playku/theme.dart';
 
 class LeaderboardRankList extends StatelessWidget {
   final List<Leaderboard> ranks;
   final int? highlightIndex;
 
-  const LeaderboardRankList({Key? key, required this.ranks, this.highlightIndex}) : super(key: key);
+  const LeaderboardRankList(
+      {Key? key, required this.ranks, this.highlightIndex})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,17 +51,48 @@ class LeaderboardRankList extends StatelessWidget {
                     ),
                     radius: 22,
                   ),
-            title: Text(
-              ranks[i].username != null && ranks[i].username.isNotEmpty
-                  ? ranks[i].username
-                  : "Unknown User",
-              style: TextStyle(
-                fontWeight: isNew ? FontWeight.bold : FontWeight.normal,
-                fontSize: isNew ? 18 : 16,
-                color: isNew ? Colors.orange[900] : Colors.black,
-              ),
-            ),
-            trailing: isNew ? Icon(Icons.star, color: Colors.orange[800]) : null,
+            title: isNew
+                ? Text("Anda Baru Saja")
+                : Text(
+                    ranks[i].username != null && ranks[i].username.isNotEmpty
+                        ? ranks[i].username
+                        : "Unknown User",
+                    style: TextStyle(
+                      fontWeight: isNew ? FontWeight.bold : FontWeight.normal,
+                      fontSize: isNew ? 18 : 16,
+                      color: isNew ? Colors.orange[900] : Colors.black,
+                    ),
+                  ),
+            trailing: isNew
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "${ranks[i].timePlay}",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.whitePrimary,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        "detik",
+                        style: GoogleFonts.sawarabiGothic(
+                          fontSize: 15,
+                          color: AppColors.whitePrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  )
+                : Text(
+                    "${ranks[i].timePlay} detik",
+                    style: GoogleFonts.sawarabiGothic(
+                      fontSize: 12,
+                      color: Colors.black,
+                    ),
+                  ),
           ),
         );
       }),
