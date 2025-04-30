@@ -69,7 +69,7 @@ class MemoryGameController extends GetxController {
     List<int> values = List.generate(
         lengCard ~/ 2, (index) => index + 1); // Setengah dari jumlah total
     List<int> shuffledValues = List.from(values)
-      ..addAll(values); // Duplikat pasangan kartu
+      ..addAll(values); 
     shuffledValues.shuffle();
 
     cards.clear();
@@ -123,7 +123,7 @@ class MemoryGameController extends GetxController {
 
   void exitGame() async {
     final homeController = Get.find<HomeController>();
-    homeController.loadUserFromPrefs();
+    homeController.userController.loadUserFromPrefs();
     // Navigasi ke Home
     Get.offAllNamed(Routes.HOME);
     await Future.delayed(Duration(milliseconds: 1400));
@@ -219,9 +219,9 @@ class MemoryGameController extends GetxController {
           prefs.setString('user', jsonEncode(userModel.value!.toJson()));
           print("Point berhasil disinkronkan ke SharedPreferences: $newPoint");
           HomeController homeController = Get.find<HomeController>();
-          homeController.loadUserFromPrefs();
-          homeController.userModel.refresh();
-          homeController.loadLeaderboard();
+          homeController.userController.loadUserFromPrefs();
+          homeController.userController.userModel.refresh();
+          homeController.leaderboardController.loadLeaderboard();
         }
       } else {
         print("Gagal mengirim data gameplay.");
@@ -238,7 +238,7 @@ class MemoryGameController extends GetxController {
       level: levels,
     );
 
-    addScore(entry);
+    addScore(entry, "Memory Game");
   }
 
   bool _isGameCompleted() {
@@ -256,53 +256,37 @@ class MemoryGameController extends GetxController {
     }
   }
 
-  Future<void> addScore(Leaderboard entry) async {
-    // 1. Ambil leaderboard sebelum update
+  Future<void> addScore(Leaderboard entry, String gameName) async {
     List<Leaderboard> before =
         await LeaderboardService.getLeaderboard(entry.gameId, entry.level);
-
-    // 2. Update leaderboard
     await LeaderboardService.updateLeaderboard(entry);
-
-    // 3. Ambil leaderboard setelah update
     List<Leaderboard> after =
         await LeaderboardService.getLeaderboard(entry.gameId, entry.level);
 
     bool isChanged = false;
-    String message = "";
+    bool wasInBefore = before
+        .any((b) => b.userId == entry.userId && b.timePlay == entry.timePlay);
+    bool isInAfter = after
+        .any((a) => a.userId == entry.userId && a.timePlay == entry.timePlay);
 
-    // Cek jika ada user baru yang masuk leaderboard atau memperbaiki waktunya
-    for (var afterEntry in after) {
-      var beforeEntry = before.firstWhereOrNull((b) =>
-          b.userId == afterEntry.userId && b.timePlay == afterEntry.timePlay);
-      if (beforeEntry == null) {
-        isChanged = true;
-        int rank = after.indexWhere((a) =>
-                a.userId == afterEntry.userId &&
-                a.timePlay == afterEntry.timePlay) +
-            1;
-        message +=
-            "User ${afterEntry.userId} mendapat leaderboard baru (Rank: $rank, Time: ${afterEntry.timePlay} detik)\n";
-      }
+    if (!wasInBefore && isInAfter) {
+      isChanged = true;
     }
-
-    // Cek jika ada skor user yang keluar leaderboard (termasuk jika digeser oleh skor barunya sendiri)
     for (var beforeEntry in before) {
-      var afterEntry = after.firstWhereOrNull((a) =>
-          a.userId == beforeEntry.userId && a.timePlay == beforeEntry.timePlay);
-      if (afterEntry == null) {
+      bool stillExists = after.any((a) =>
+          a.userId == beforeEntry.userId &&
+          a.timePlay == beforeEntry.timePlay &&
+          a.played_at == beforeEntry.played_at);
+      if (!stillExists) {
         isChanged = true;
-        message +=
-            "Skor ${beforeEntry.timePlay} detik milik user ${beforeEntry.userId} keluar dari leaderboard\n";
+        break;
       }
     }
-
     if (isChanged) {
-      // Cari index user pada leaderboard terbaru
-      int? newIndex = after.indexWhere((a) =>
-        a.userId == entry.userId && a.timePlay == entry.timePlay);
+      int? newIndex = after.indexWhere(
+          (a) => a.userId == entry.userId && a.timePlay == entry.timePlay);
       DialogNewLeaderboard.showLeaderboardCongrats(
-        "Minesweeper",
+        gameName,
         beforeRanks: before,
         afterRanks: after,
         newRankIndex: newIndex >= 0 ? newIndex : null,

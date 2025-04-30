@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:playku/app/modules/home/controller/user_controller.dart';
 import 'package:playku/core.dart';
-
 
 const String _CLOUDINARY_CLOUD_NAME = 'dotz74j1p';
 const String _CLOUDINARY_API_KEY = '983354314759691';
@@ -39,7 +39,7 @@ class QImagePicker extends StatefulWidget {
 }
 
 class _QImagePickerState extends State<QImagePicker> {
-  final HomeController homecontroller = Get.find<HomeController>();
+  final UserController userController = Get.find<UserController>();
 
   String? imageUrl;
   bool loading = false;
@@ -129,14 +129,14 @@ class _QImagePickerState extends State<QImagePicker> {
     if (filePath == null) return;
 
     loading = true;
-    homecontroller.isUploading.value = true;
+    userController.isUploading.value = true;
 
     setState(() {});
 
     imageUrl = await uploadToCloudinary(filePath);
 
     loading = false;
-    homecontroller.isUploading.value = false;
+    userController.isUploading.value = false;
 
     setState(() {});
 

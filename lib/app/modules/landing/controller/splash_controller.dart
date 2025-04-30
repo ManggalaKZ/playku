@@ -17,6 +17,7 @@ class SplashController extends GetxController {
       if (userData != null) {
         print("User ditemukan: ${userData['username']}");
         Get.offNamed(Routes.HOME);
+        
       } else {
         print("User tidak ditemukan, ke WelcomeView");
         Get.offNamed(Routes.WELCOME);

@@ -8,8 +8,11 @@ import 'package:playku/app/widgets/dialog_new_leaderboard/dialog_new_leaderboard
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:playku/core.dart';
+import 'package:playku/app/modules/game/answer-question/controller/answer_question_controller.dart';
 
 class AnswerQuestionGame extends FlameGame with TapDetector {
+  final AnswerQuestionController controller =
+      Get.put(AnswerQuestionController());
   GameController gamecontroller = Get.put(GameController());
   AnswerQuestionGame() {
     debugMode = true;
@@ -30,8 +33,8 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
 
   @override
   Future<void> onLoad() async {
-    loadUserFromPrefs();
-    _startTime = DateTime.now();
+    controller.loadUserFromPrefs();
+    controller.startTime = DateTime.now();
   }
 
   @override
@@ -43,125 +46,70 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
     Vector2 tapPosition = event.eventPosition.global;
     for (var answer in answerComponents) {
       if (answer.containsPoint(tapPosition)) {
-        print("Tap di dalam AnswerComponent ${answer.text}");
-
         answer.onPressed(answer.isCorrect);
         break;
       }
     }
   }
 
-  Future<void> loadUserFromPrefs() async {
-    var userData = await SharedPreferenceHelper.getUserData();
-
-    if (userData != null) {
-      userModel.value = UserModel(
-          username: userData["name"],
-          id: userData["id"],
-          name: userData["username"],
-          email: userData["email"],
-          avatar: userData["avatar"],
-          point: userData["point"]);
-      print("User berhasil dimuat: ${userModel.value!.id}");
-    }
-  }
-
   void startGame() {
-    print("Permainan dimulai!");
-
-    _startTime = DateTime.now(); // Reset waktu mulai ke waktu saat ini
-    _startTimer(); // Jalankan timer baru
-
+    controller.startGame();
     _generateNewQuestion();
     overlays.remove('Countdown');
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (!_isPaused) {
-        Duration elapsed = DateTime.now().difference(_startTime);
-        int minutes = elapsed.inMinutes;
-        int seconds = elapsed.inSeconds % 60;
-
-        elapsedTimeString.value =
-            "$minutes:${seconds.toString().padLeft(2, '0')}";
-      }
-    });
-  }
-
   void pauseGame() {
-    _isPaused = true;
-    _timer?.cancel();
-    // overlays.add('PauseMenu');
+    controller.pauseGame();
   }
 
   void resumeGame() {
-    _isPaused = false;
-    _startTime = DateTime.now().subtract(Duration(
-      minutes: int.parse(elapsedTimeString.value.split(":")[0]),
-      seconds: int.parse(elapsedTimeString.value.split(":")[1]),
-    ));
-    _startTimer();
-    // overlays.remove('PauseMenu');
+    controller.resumeGame();
   }
 
   void stopTimer() {
-    _timer?.cancel();
-    _timer = null;
-  }
-
-  int convertTimeToSeconds(String lastElapsedTime) {
-    List<String> parts = lastElapsedTime.split(":");
-    int minutes = int.parse(parts[0]);
-    int seconds = int.parse(parts[1]);
-    return (minutes * 60) + seconds;
+    controller.stopTimer();
   }
 
   void gameOver() async {
     stopTimer();
-    GameController controller = Get.put(GameController());
-
-    lastElapsedTime = elapsedTimeString.value;
-    int finalTime = convertTimeToSeconds(lastElapsedTime);
-    int finalScore = correctAnswers;
-    String userId = userModel.value!.id ?? "";
+    GameController gc = Get.put(GameController());
+    int finalTime =
+        controller.convertTimeToSeconds(controller.elapsedTimeString.value);
+    int finalScore = controller.correctAnswers.value;
+    String userId = controller.userModel.value!.id ?? "";
     String now = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
     String levels =
         gamecontroller.selectedLevel.value.toString().split('.').last;
-    loadLeaderboard(controller.idgame);
+    controller.loadLeaderboard(gc.idgame, levels);
 
     GameService.postGameResult(
       userId: userId,
-      gameId: controller.idgame,
+      gameId: gc.idgame,
       score: finalScore,
       timePlay: finalTime,
       level: levels,
       playedAt: now,
     ).then((success) async {
       if (success) {
-        print("Data gameplay berhasil dikirim!");
-        lastElapsedTime = "00:00";
-        print("user id yang di tambah 5 $userId");
-
+        controller.lastElapsedTime = "00:00";
         int? newPoint = await PointService.updateUserPoint(userId, 5);
         if (newPoint != null) {
-          userModel.value = userModel.value!.copyWith(point: newPoint);
+          controller.userModel.value =
+              controller.userModel.value!.copyWith(point: newPoint);
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('user', jsonEncode(userModel.value!.toJson()));
-
+          prefs.setString(
+              'user', jsonEncode(controller.userModel.value!.toJson()));
           HomeController homeController = Get.find<HomeController>();
-          homeController.loadUserFromPrefs();
-          homeController.userModel.refresh();
-          homeController.loadLeaderboard();
+          homeController.userController.loadUserFromPrefs();
+          homeController.userController.userModel.refresh();
+          homeController.leaderboardController.loadLeaderboard();
         }
-      } else {
-        print("Gagal mengirim data gameplay.");
       }
     });
 
     Leaderboard entry = Leaderboard(
         userId: userId,
-        gameId: controller.idgame,
+        gameId: gc.idgame,
         score: finalScore,
         timePlay: finalTime,
         played_at: now,
@@ -169,76 +117,12 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
 
     await Future.delayed(Duration(milliseconds: 1));
     if (finalScore == 10) {
-      addScore(entry);
-    }
-  }
-
-  Future<void> loadLeaderboard(int gameId) async {
-    String levels =
-        gamecontroller.selectedLevel.value.toString().split('.').last;
-
-    try {
-      leaderboard.value =
-          await LeaderboardService.getLeaderboard(gameId, levels);
-    } catch (e) {
-      print("Error: $e");
-    }
-  }
-
-  Future<void> addScore(Leaderboard entry) async {
-    // 1. Ambil leaderboard sebelum update
-    List<Leaderboard> before =
-        await LeaderboardService.getLeaderboard(entry.gameId, entry.level);
-
-    // 2. Update leaderboard
-    await LeaderboardService.updateLeaderboard(entry);
-
-    // 3. Ambil leaderboard setelah update
-    List<Leaderboard> after =
-        await LeaderboardService.getLeaderboard(entry.gameId, entry.level);
-
-    bool isChanged = false;
-
-    // Cek apakah skor user ini baru muncul di leaderboard
-    bool wasInBefore = before
-        .any((b) => b.userId == entry.userId && b.timePlay == entry.timePlay);
-    bool isInAfter = after
-        .any((a) => a.userId == entry.userId && a.timePlay == entry.timePlay);
-
-    if (!wasInBefore && isInAfter) {
-      isChanged = true;
-    }
-
-    // Cek jika ada entri di before yang hilang dari after (misalnya tergeser keluar leaderboard)
-    for (var beforeEntry in before) {
-      bool stillExists = after.any((a) =>
-          a.userId == beforeEntry.userId &&
-          a.timePlay == beforeEntry.timePlay &&
-          a.played_at == beforeEntry.played_at);
-
-      if (!stillExists) {
-        isChanged = true;
-        break;
-      }
-    }
-
-    if (isChanged) {
-      // Cari index baru user di leaderboard
-      int? newIndex = after.indexWhere(
-          (a) => a.userId == entry.userId && a.timePlay == entry.timePlay);
-
-      DialogNewLeaderboard.showLeaderboardCongrats(
-        "Minesweeper",
-        beforeRanks: before,
-        afterRanks: after,
-        newRankIndex: newIndex >= 0 ? newIndex : null,
-      );
+      controller.addScore(entry, "Math Metrix");
     }
   }
 
   void _generateNewQuestion() {
-    if (currentQuestion > 10) {
-      print('Game Over dipanggil, soal ke: $currentQuestion');
+    if (controller.currentQuestion.value > 10) {
       if (!overlays.isActive('GameOver')) {
         overlays.add('GameOver');
         gameOver();
@@ -251,9 +135,6 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
     questionComponent = QuestionComponent(questionData.question);
     answerComponents = [];
 
-    print("Soal: ${questionData.question}");
-    print("Jawaban Benar: ${questionData.correctAnswer}");
-    print("Opsi Jawaban: ${questionData.answers}");
     for (int i = 0; i < questionData.answers.length; i++) {
       answerComponents.add(AnswerComponent(
         text: _formatAnswerText(
@@ -261,26 +142,16 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
         isCorrect: questionData.answers[i] == questionData.correctAnswer,
         index: i,
         onPressed: (isCorrect) {
-          print("index $i");
-          print("jawaban yang benar: ${questionData.correctAnswer}");
-
           if (isCorrect) {
             AudioService.acc();
-            correctAnswers++;
-            currentQuestion++;
-            print("Komponen sebelum reset: ${questionData.answers.length}");
+            controller.correctAnswers.value++;
+            controller.currentQuestion.value++;
             resetQuestion();
-            print("Komponen setelah reset: ${questionData.answers.length}");
           } else {
             AudioService.wrong();
-            print("jawaban salah");
-            currentQuestion++;
-            print("Komponen sebelum reset: ${questionData.answers.length}");
+            controller.currentQuestion.value++;
             resetQuestion();
-            print("Komponen setelah reset: ${questionData.answers.length}");
           }
-
-          print("berhasil di reset");
         },
       ));
     }
@@ -302,54 +173,34 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
 
   Future<void> resetQuestion() async {
     removeAll([...answerComponents, questionComponent]);
-
     answerComponents.clear();
-
     questionComponent.removeFromParent();
-
     await Future.delayed(Duration(milliseconds: 100));
-
     _generateNewQuestion();
-
-    print("Game telah di-reset sepenuhnya");
   }
 
   Future<void> exitGame() async {
-    print("Mulai keluar dari game...");
-
     removeAll([...answerComponents, questionComponent]);
     answerComponents.clear();
     questionComponent.removeFromParent();
-    lastElapsedTime = "00:00";
-    elapsedTimeString.value = "00:00";
-    currentQuestion = 1;
-    correctAnswers = 0;
+    controller.lastElapsedTime = "00:00";
+    controller.elapsedTimeString.value = "00:00";
+    controller.currentQuestion.value = 1;
+    controller.correctAnswers.value = 0;
     stopTimer();
     await Future.delayed(Duration(milliseconds: 100));
     overlays.remove('ExitButton');
-
-    print("Game berhasil di-reset & keluar.");
   }
 
   void restartGame() {
-    print("Restarting game...");
-
     stopTimer();
-    elapsedTimeString.value = "00:00";
-
-    _startTime = DateTime.now();
-
+    controller.elapsedTimeString.value = "00:00";
+    controller.startTime = DateTime.now();
     answerComponents.clear();
     questionComponent.removeFromParent();
-    print("All components removed.");
-
-    currentQuestion = 1;
-    correctAnswers = 0;
-    print("Question & Score reset.");
-
-    startGame(); // Mulai game baru, termasuk timer
-
+    controller.currentQuestion.value = 1;
+    controller.correctAnswers.value = 0;
+    startGame();
     overlays.remove('GameOver');
-    print("GameOver overlay removed.");
   }
 }

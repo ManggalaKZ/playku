@@ -3,7 +3,6 @@ import 'package:flame/game.dart';
 import 'package:get/get.dart';
 import 'package:playku/core.dart';
 
-
 class AnswerQuestionView extends StatefulWidget {
   @override
   _AnswerQuestionViewState createState() => _AnswerQuestionViewState();
@@ -66,7 +65,7 @@ class _AnswerQuestionViewState extends State<AnswerQuestionView> {
             return Positioned(
                 top: 50,
                 left: 20,
-                child: Text("${game.elapsedTimeString.value}"));
+                child: Text(game.controller.elapsedTimeString.value));
           }),
           if (_isPaused)
             Container(

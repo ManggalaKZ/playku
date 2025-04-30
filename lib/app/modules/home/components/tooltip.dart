@@ -8,7 +8,7 @@ class TooltipController extends GetxController {
 
   void showTooltip(BuildContext context, String message, GlobalKey key) {
     if (isTooltipVisible.value) {
-      hideTooltip(); 
+      hideTooltip();
       return;
     }
 
@@ -21,7 +21,7 @@ class TooltipController extends GetxController {
         builder: (context) => Stack(
           children: [
             GestureDetector(
-              onTap: hideTooltip, 
+              onTap: hideTooltip,
               behavior: HitTestBehavior.translucent,
               child: Container(
                 color: Colors.transparent,
@@ -53,8 +53,7 @@ class TooltipController extends GetxController {
       Overlay.of(Get.overlayContext!)?.insert(overlayEntry!);
       isTooltipVisible.value = true;
 
-      Future.delayed(
-          Duration(seconds: 2), hideTooltip); 
+      Future.delayed(Duration(seconds: 2), hideTooltip);
     });
   }
 

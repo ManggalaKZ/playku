@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:playku/app/modules/home/controller/leaderboard_controller.dart';
 import 'package:playku/core.dart';
 
 class LeaderboardDialog extends StatelessWidget {
-  final HomeController controller;
+  final LeaderboardController controller;
 
   const LeaderboardDialog({super.key, required this.controller});
+  // var isLoading = false.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +106,8 @@ class LeaderboardDialog extends StatelessWidget {
                                   int index = entry.key;
                                   var e = entry.value;
                                   bool isCurrentUser = e.username ==
-                                      controller.userModel.value?.username;
+                                      controller.userController.userModel.value
+                                          ?.username;
 
                                   return Container(
                                     margin:

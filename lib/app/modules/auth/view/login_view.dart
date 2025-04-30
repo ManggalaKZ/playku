@@ -50,7 +50,7 @@ class LoginView extends GetView<LoginController> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            SoundButton(controller: controller),
+                            SoundButton(controller: controller, color: Colors.black,),
                             // LanguangeSwitch(controller: controller),
                           ],
                         ),

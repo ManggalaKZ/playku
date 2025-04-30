@@ -59,7 +59,7 @@ class GameOverScreenMinesweeper extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () async {
                     final homeController = Get.find<HomeController>();
-                    homeController.loadUserFromPrefs();
+                    homeController.userController.loadUserFromPrefs();
                     // Navigasi ke Home
                     Get.offAllNamed(Routes.HOME);
                     controller.resetGame();

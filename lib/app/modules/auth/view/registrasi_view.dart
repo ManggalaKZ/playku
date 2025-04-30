@@ -53,7 +53,9 @@ class RegistrasiView extends GetView<RegistrasiController> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            SoundButton(controller: loginController),
+                            SoundButton(
+                                controller: loginController,
+                                color: Colors.black),
                             LanguangeSwitch(controller: loginController),
                           ],
                         ),
@@ -145,8 +147,7 @@ class RegistrasiView extends GetView<RegistrasiController> {
                                 style: GoogleFonts.sawarabiGothic(
                                     color: AppColors.secondary,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 15
-                                    ),
+                                    fontSize: 15),
                               ),
                             ),
                           ],

@@ -6,8 +6,9 @@ import '../modules/auth/controller/login_controller.dart';
 
 class SoundButton extends StatelessWidget {
   final LoginController controller;
+  final color;
   
-  const SoundButton({super.key, required this.controller});
+  const SoundButton({super.key, required this.controller, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +27,7 @@ class SoundButton extends StatelessWidget {
               ],
             ),
             child: SvgPicture.asset(
+              color: color,
               controller.isSoundOn.value
                   ? 'assets/icons/suara_on.svg'
                   : 'assets/icons/suara_off.svg',

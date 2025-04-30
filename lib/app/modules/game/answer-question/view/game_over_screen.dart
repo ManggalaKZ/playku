@@ -26,7 +26,7 @@ class GameOverScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Game Selesai!\nSkor: ${game.correctAnswers}/10',
+                'Game Selesai!\nSkor: ${game.controller.correctAnswers}/10',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontSize: 24,
@@ -34,7 +34,7 @@ class GameOverScreen extends StatelessWidget {
                     color: Colors.white),
               ),
               Text(
-                "Waktu bermain: ${game.elapsedTimeString.value}",
+                "Waktu bermain: ${game.controller.elapsedTimeString.value}",
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
               SizedBox(height: 30),
@@ -67,7 +67,7 @@ class GameOverScreen extends StatelessWidget {
                     AudioService.playButtonSound();
                     game.exitGame();
                     final homeController = Get.find<HomeController>();
-                    homeController.loadUserFromPrefs();
+                    homeController.userController.loadUserFromPrefs();
                     // Navigasi ke Home
                     Get.offAllNamed(Routes.HOME);
                   },
