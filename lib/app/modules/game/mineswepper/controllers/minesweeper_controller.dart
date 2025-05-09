@@ -26,7 +26,6 @@ class MinesweeperController extends GetxController {
 
   bool firstClick = true;
   bool gameOver = false;
-  int elapsedSeconds = 0;
 
   void Function(bool won)? onGameEndCallback;
 
@@ -66,7 +65,6 @@ class MinesweeperController extends GetxController {
 
     firstClick = true;
     gameOver = false;
-    elapsedSeconds = 0;
   }
 
   void onTileTapped(int row, int col, BuildContext context) {
@@ -83,9 +81,9 @@ class MinesweeperController extends GetxController {
       tile.openTile();
       final game = Get.find<MinesweeperGame>();
 
-      lastTime = game.getElapsedTimeInSeconds();
+      lastTime = game.convertTimeToSeconds(game.elapsedTimeString.value);
       tileComponents['$row,$col']?.updateTile = tile;
-
+      game.ccTimer();
       _revealAllTiles();
       gameOver = true;
       onGameEndCallback!(false);
@@ -93,11 +91,11 @@ class MinesweeperController extends GetxController {
       _floodFill(row, col);
       if (_checkWin()) {
         final game = Get.find<MinesweeperGame>();
-
-        lastTime = game.getElapsedTimeInSeconds();
+        game.ccTimer();
+        lastTime = game.convertTimeToSeconds(game.elapsedTimeString.value);
         gameOver = true;
         onGameEndCallback!(true);
-        addData(context); // <-- Kirim context di sini
+        addData(context);
       }
     }
 
@@ -105,6 +103,7 @@ class MinesweeperController extends GetxController {
   }
 
   void addData(BuildContext context) {
+    final game = Get.find<MinesweeperGame>();
     int finalTime = lastTime;
     int finalScore = 10;
     String userId = userModel.value!.id ?? "";
@@ -247,7 +246,6 @@ class MinesweeperController extends GetxController {
   void resetGame() {
     firstClick = true;
     gameOver = false;
-    elapsedSeconds = 0;
     _generateBoardAvoiding(0, 0);
     update();
   }

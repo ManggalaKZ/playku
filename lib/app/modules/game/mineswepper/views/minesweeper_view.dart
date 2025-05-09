@@ -1,9 +1,11 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:playku/app/modules/game/answer-question/component/pause_component.dart';
 import 'package:playku/app/modules/game/mineswepper/views/gameOver_view.dart';
+import 'package:playku/app/widgets/dialog_exit_game.dart';
 import 'package:playku/core.dart';
-
 
 class MinesweeperView extends StatelessWidget {
   const MinesweeperView({Key? key}) : super(key: key);
@@ -21,111 +23,106 @@ class MinesweeperView extends StatelessWidget {
 
     controller.setLevel(controller.selectedLevel.value);
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          GameWidget(
-            game: game,
-            overlayBuilderMap: {
-              'GameOverOverlay': (_, __) => GameOverScreenMinesweeper(),
-              'GameWinOverlay': (_, __) => GameWinScreen(),
+    return WillPopScope(
+      onWillPop: () async {
+        final exit = await Get.dialog<bool>(
+          ExitDialogGame(
+            onExit: () async {
+              AudioService.playButtonSound();
+
+              controller.resetGame();
+              // game.gameTimer.reset();
+              await Future.delayed(Duration(milliseconds: 1200));
+              game.clearGame();
+              Get.offAllNamed(Routes.HOME);
             },
           ),
-          Obx(() {
-            if (!controller.isCountdownFinished.value ||
-                controller.isRestartingGame.value) {
-              return CountdownView(onCountdownFinished: game.startGame);
-            }
-            return SizedBox();
-          }),
-          Positioned(
-            top: 50,
-            right: 20,
-            child: IconButton(
-              icon: Icon(Icons.menu, color: Colors.white, size: 30),
-              onPressed: () {
-                AudioService.playButtonSound();
-                game.togglePause();
+          barrierDismissible: false,
+        );
+        return exit ?? false;
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            GameWidget(
+              game: game,
+              overlayBuilderMap: {
+                'GameOverOverlay': (_, __) => GameOverScreenMinesweeper(),
+                'GameWinOverlay': (_, __) => GameWinScreen(),
               },
             ),
-          ),
-          Obx(() {
-            if (game.isPaused.value) {
-              return Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                color: const Color.fromARGB(159, 0, 0, 0),
-                child: Center(
+            Obx(() {
+              if (!controller.isCountdownFinished.value ||
+                  controller.isRestartingGame.value) {
+                return CountdownView(onCountdownFinished: game.startGame);
+              }
+              return SizedBox();
+            }),
+            Positioned(
+              top: 50,
+              right: 20,
+              child: IconButton(
+                icon: Icon(Icons.menu, color: Colors.white, size: 30),
+                onPressed: () {
+                  AudioService.playButtonSound();
+                  game.pauseGame();
+                },
+              ),
+            ),
+            Obx(() {
+              if (!game.isPaused.value &&
+                  game.controller.isCountdownFinished.value) {
+                return Align(
+                  alignment: Alignment.topCenter,
                   child: Container(
-                    height: 250,
-                    width: 320,
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
+                    margin: EdgeInsets.only(top: Get.height * 0.1),
                     decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color.fromARGB(255, 255, 255, 255)
+                          .withOpacity(0.5),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Game Paused",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 40),
-                        ElevatedButton(
-                          onPressed: () {
-                            AudioService.playButtonSound();
-                            game.togglePause(); 
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.secondary,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32),
-                            ),
-                          ),
-                          child: Text(
-                            "Resume",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: () async {
-                            AudioService.playButtonSound();
-                            Get.back();
-                            controller.resetGame();
-                            game.gameTimer.reset();
-                            await Future.delayed(Duration(milliseconds: 1200));
-                            game.clearGame();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.secondary,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32),
-                            ),
-                          ),
-                          child: Text(
-                            "Keluar",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: Obx(() {
+                      return Text(
+                        game.elapsedTimeString.value,
+                        style: GoogleFonts.sawarabiGothic(
+                            fontSize: 28, color: Colors.white),
+                      );
+                    }),
                   ),
-                ),
-              );
-            }
-            return SizedBox.shrink();
-          }),
-        ],
+                );
+              }
+              return SizedBox();
+            }),
+            Obx(() {
+              if (game.isPaused.value) {
+                return PauseOverlay(
+                  waktu: "${game.elapsedTimeString.value}",
+                  namaGame: "MineSweeper",
+                  onResume: () {
+                    AudioService.playButtonSound();
+                    game.resumeGame();
+                  },
+                  onRestart: () {
+                    controller.gameRef?.overlays.remove('GameWinOverlay');
+                    game.elapsedTimeString.value = "0:00";
+                    game.mainLagi();
+                  },
+                  onExit: () async {
+                    AudioService.playButtonSound();
+
+                    controller.resetGame();
+                    // game.gameTimer.reset();
+                    await Future.delayed(Duration(milliseconds: 1200));
+                    game.clearGame();
+                    Get.offAllNamed(Routes.HOME);
+                  },
+                );
+              }
+              return SizedBox.shrink();
+            }),
+          ],
+        ),
       ),
     );
   }

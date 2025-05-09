@@ -61,6 +61,7 @@ dependencies:
   image_picker: ^1.1.2
   file_picker: ^10.0.0
   permission_handler: ^12.0.0
+  flutter_arc_text: ^0.6.0
 
 dev_dependencies:
   flutter_test:
@@ -81,8 +82,14 @@ flutter:
     - assets/images/math.png
     - assets/images/pattern_light.png
     - assets/bg/hiasan.svg
+    - assets/bg/bingkai.svg
     - assets/icons/suara_on.svg
     - assets/icons/suara_off.svg
+    - assets/icons/play.svg
+    - assets/icons/leave.svg
+    - assets/icons/restart.svg
+    - assets/icons/shop.svg
+    - assets/icons/pengaturan.svg
     - assets/audio/bgmusik.mp3
     - assets/audio/bgmusik2.mp3
     - assets/audio/bgmusik4.mp3

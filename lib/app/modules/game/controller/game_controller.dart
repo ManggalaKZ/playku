@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:playku/core.dart';
 import 'package:playku/core_game.dart';
 
-
 class GameController extends GetxController {
   var countdown = 3.obs;
   var isCountingDown = false.obs;

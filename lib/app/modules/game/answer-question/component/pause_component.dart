@@ -2,11 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:playku/core.dart';
 
-class GameWinScreen extends StatelessWidget {
-  final game = Get.find<MinesweeperGame>();
-  final controller = Get.find<MinesweeperController>();
+import '../../../../../core.dart';
+
+class PauseOverlay extends StatelessWidget {
+  final VoidCallback onResume;
+  final VoidCallback onExit;
+  final VoidCallback onRestart;
+  final String waktu;
+  final String namaGame;
+  const PauseOverlay(
+      {required this.onResume,
+      required this.onExit,
+      required this.onRestart,
+      required this.waktu,
+      required this.namaGame,
+      Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +54,7 @@ class GameWinScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 30),
                     Text(
-                      'Minesweeper\n⏱ ${controller.lastTime} detik',
+                      'Game Paused',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 28,
@@ -50,40 +62,49 @@ class GameWinScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.monetization_on,
-                          size: 28.0,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          '+5',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 5),
+                    Text(
+                      'waktu: $waktu',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
                     SizedBox(
                       height:
-                          90.0, // tambahkan tinggi agar ada ruang teks di bawah
+                          120.0, // tambahkan tinggi agar ada ruang teks di bawah
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Column(
                             children: [
                               InkWell(
-                                onTap: () {
-                                  controller.gameRef?.overlays
-                                      .remove('GameWinOverlay');
-                                  game.mainLagi();
-                                },
+                                onTap: onExit,
+                                child: SvgPicture.asset(
+                                  'assets/icons/leave.svg',
+                                  height: 60,
+                                  // color: AppColors.whitePrimary,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Keluar",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              InkWell(
+                                onTap: onRestart,
                                 child: SvgPicture.asset(
                                   'assets/icons/restart.svg',
                                   height: 60,
@@ -105,28 +126,17 @@ class GameWinScreen extends StatelessWidget {
                           Column(
                             children: [
                               InkWell(
-                                onTap: () async {
-                                  final homeController =
-                                      Get.find<HomeController>();
-                                  homeController.userController
-                                      .loadUserFromPrefs();
-                                  // Navigasi ke Home
-                                  Get.offAllNamed(Routes.HOME);
-                                  controller.resetGame();
-                                  // game.gameTimer.reset();
-                                  await Future.delayed(
-                                      Duration(milliseconds: 1200));
-                                  game.clearGame();
-                                },
+                                onTap: onResume,
                                 child: SvgPicture.asset(
-                                  'assets/icons/leave.svg',
+                                  'assets/icons/play.svg',
                                   height: 60,
+                                  // color: AppColors.whitePrimary,
                                   fit: BoxFit.cover,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                "keluar",
+                                "resume",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 14,
@@ -155,7 +165,7 @@ class GameWinScreen extends StatelessWidget {
                     Positioned(
                       top: 20, // atur agar pas di tengah bingkai
                       child: Text(
-                        "MENANG",
+                        namaGame,
                         style: GoogleFonts.sawarabiGothic(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,

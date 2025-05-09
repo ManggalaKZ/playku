@@ -182,7 +182,9 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
   Future<void> exitGame() async {
     removeAll([...answerComponents, questionComponent]);
     answerComponents.clear();
-    questionComponent.removeFromParent();
+    if (questionComponent.parent != null) {
+      questionComponent.removeFromParent();
+    }
     controller.lastElapsedTime = "00:00";
     controller.elapsedTimeString.value = "00:00";
     controller.currentQuestion.value = 1;
@@ -194,13 +196,12 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
 
   void restartGame() {
     stopTimer();
-    controller.elapsedTimeString.value = "00:00";
+    controller.elapsedTimeString.value = "0:00";
     controller.startTime = DateTime.now();
     answerComponents.clear();
     questionComponent.removeFromParent();
     controller.currentQuestion.value = 1;
     controller.correctAnswers.value = 0;
-    startGame();
-    overlays.remove('GameOver');
+    controller.isCountdownFinished.value = false;
   }
 }

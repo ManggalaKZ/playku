@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:playku/app/data/local/shared_preference_helper.dart';
 import 'package:playku/app/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -107,7 +108,8 @@ class UserService {
           .single();
 
       print("📦 Update response: $updateResponse");
-
+      debugPrint("📦 Update response: $updateResponse");
+      
       final updatedUserData = UserModel.fromJson(updateResponse);
 
       print("✅ UserModel setelah update: ${updatedUserData.toJson()}");

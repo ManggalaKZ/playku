@@ -1,48 +1,26 @@
 import 'dart:ui';
-
+import 'dart:async' as dart_async;
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:flame/text.dart';
 import 'package:get/get.dart';
 import 'package:playku/app/modules/game/mineswepper/components/board_component_minesweeper.dart';
-import 'package:playku/core.dart';
-
+import 'package:playku/app/modules/game/mineswepper/controllers/minesweeper_controller.dart';
+import 'package:playku/theme.dart';
 
 class MinesweeperGame extends FlameGame {
   final controller = Get.find<MinesweeperController>();
-
   RxBool isPaused = false.obs;
-
   late TextComponent timerText;
   bool hasGameStarted = false;
-  late GameTimerComponent gameTimer;
+  var elapsedTimeString = "0:00".obs;
+  dart_async.Timer? _timer;
+  late DateTime startTime;
+  Duration totalElapsed = Duration.zero;
 
   @override
   Future<void> onLoad() async {
     super.onLoad();
     controller.gameRef = this;
-    add(BoardComponentMinesweeper());
-    timerText = TextComponent(
-      text: 'Waktu: 00:00',
-      anchor: Anchor.topCenter,
-      textRenderer: TextPaint(
-        style: TextStyle(
-          color: AppColors.whitePrimary,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-    await add(timerText);
-    timerText.position = Vector2(size.x / 2, size.y * 0.15);
-
-    gameTimer = GameTimerComponent(
-      isPaused: isPaused,
-      onTick: (elapsed) {
-        timerText.text = 'Waktu: $elapsed';
-      },
-    );
-    add(gameTimer);
   }
 
   @override
@@ -53,36 +31,57 @@ class MinesweeperGame extends FlameGame {
   }
 
   void startGame() {
+    totalElapsed = Duration.zero;
+    startTime = DateTime.now();
     if (hasGameStarted) return;
-
-    timerText.text = 'Waktu: 00:00';
+    add(BoardComponentMinesweeper());
     isPaused.value = false;
     hasGameStarted = true;
-
-    gameTimer.start();
-
     controller.isCountdownFinished.value = true;
     controller.isRestartingGame.value = false;
+    _startTimer();
   }
 
-  int getElapsedTimeInSeconds() {
-    final timeText = timerText.text.replaceAll('Waktu: ', ''); 
-    final parts = timeText.split(':'); 
-    if (parts.length == 2) {
-      final minutes = int.tryParse(parts[0]) ?? 0;
-      final seconds = int.tryParse(parts[1]) ?? 0;
-      return minutes * 60 + seconds;
-    }
-    return 0;
+  void _startTimer() {
+    print("Timer dimulai");
+    _timer?.cancel();
+    _timer = dart_async.Timer.periodic(Duration(seconds: 1), (timer) {
+      if (!isPaused.value) {
+        Duration elapsed = totalElapsed + DateTime.now().difference(startTime);
+        int minutes = elapsed.inMinutes;
+        int seconds = elapsed.inSeconds % 60;
+        elapsedTimeString.value =
+            "$minutes:${seconds.toString().padLeft(2, '0')}";
+        print("waktu${elapsedTimeString.value}");
+      }
+    });
+  }
+
+  int convertTimeToSeconds(String lastElapsedTime) {
+    List<String> parts = lastElapsedTime.split(":");
+    int minutes = int.parse(parts[0]);
+    int seconds = int.parse(parts[1]);
+    return (minutes * 60) + seconds;
   }
 
   void endGame() {
-    gameTimer.stop();
     hasGameStarted = false;
   }
 
-  void togglePause() {
-    isPaused.value = !isPaused.value;
+  void ccTimer() {
+    _timer?.cancel();
+  }
+
+  void pauseGame() {
+    isPaused.value = true;
+    totalElapsed += DateTime.now().difference(startTime);
+    _timer?.cancel();
+  }
+
+  void resumeGame() {
+    isPaused.value = false;
+    startTime = DateTime.now(); // Mulai ulang dari waktu sekarang
+    _startTimer();
   }
 
   void clearGame() {
@@ -90,22 +89,16 @@ class MinesweeperGame extends FlameGame {
     isPaused.value = false;
     controller.isRestartingGame.value = false;
     controller.isCountdownFinished.value = false;
-    gameTimer.stop();
-    remove(timerText);
-    remove(gameTimer);
+    elapsedTimeString.value = "0:00";
+    totalElapsed = Duration.zero;
+    _timer?.cancel();
   }
 
   void mainLagi() {
+    elapsedTimeString.value = "0:00";
+    controller.isCountdownFinished.value = false;
     controller.resetGame();
-
     controller.setLevel(controller.selectedLevel.value);
-
     clearGame();
-
-    add(BoardComponentMinesweeper());
-    gameTimer.reset();
-    startGame();
-    add(timerText);
-    add(gameTimer);
   }
 }

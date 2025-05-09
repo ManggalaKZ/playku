@@ -76,8 +76,8 @@ class AuthService {
             'password': password,
             'point': 120,
             'avatar': null,
-            'ownedBorderIds': ["93a33a73-8148-41fa-80e6-5dc0aad72c17"],
-            'usedBorderIds': "93a33a73-8148-41fa-80e6-5dc0aad72c17"
+            'ownedBorderIds': ["f58d0267-5934-4734-af06-d1cf282e0b41"],
+            'usedBorderIds': "f58d0267-5934-4734-af06-d1cf282e0b41"
           })
           .select()
           .single();

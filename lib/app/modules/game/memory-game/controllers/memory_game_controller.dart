@@ -24,13 +24,13 @@ class MemoryGameController extends GetxController {
   var isCountdownFinished = false.obs;
   var isRestartingGame = false.obs;
   var leaderboard = <Leaderboard>[].obs;
-
+  var elapsedTimeString = "0:00".obs;
+  late DateTime startTime;
   var userModel = Rxn<UserModel>();
   var cards = <MemoryCard>[].obs;
   var firstSelectedIndex = (-1).obs;
   var isProcessing = false.obs;
 
-  var elapsedTime = 0.obs;
   var isPaused = false.obs;
   Timer? _timer;
 
@@ -68,8 +68,7 @@ class MemoryGameController extends GetxController {
 
     List<int> values = List.generate(
         lengCard ~/ 2, (index) => index + 1); // Setengah dari jumlah total
-    List<int> shuffledValues = List.from(values)
-      ..addAll(values); 
+    List<int> shuffledValues = List.from(values)..addAll(values);
     shuffledValues.shuffle();
 
     cards.clear();
@@ -77,11 +76,19 @@ class MemoryGameController extends GetxController {
         shuffledValues.map((val) => MemoryCard(value: val)).toList());
   }
 
+  int convertTimeToSeconds(String lastElapsedTime) {
+    List<String> parts = lastElapsedTime.split(":");
+    int minutes = int.parse(parts[0]);
+    int seconds = int.parse(parts[1]);
+    return (minutes * 60) + seconds;
+  }
+
   void setGame(MemoryGame gameInstance) {
     game = gameInstance;
   }
 
   void startGame() {
+    startTime = DateTime.now();
     print("Countdown selesai! Game dimulai...");
     isCountdownFinished.value = true;
     isRestartingGame.value = false;
@@ -91,33 +98,42 @@ class MemoryGameController extends GetxController {
   void mainlagi() {
     isCountdownFinished.value = false;
     isProcessing.value = false;
-
-    elapsedTime.value = 0;
+    elapsedTimeString.value = "0:00";
     generateCards();
   }
 
   void restartGame() {
     firstSelectedIndex.value = -1;
     isProcessing.value = false;
-
-    elapsedTime.value = 0;
+    elapsedTimeString.value = "0:00";
     _startTimer();
   }
 
   void _startTimer() {
-    stopTimer();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      elapsedTime.value++;
+    print("Timer dimulai"); // Tambahkan ini untuk debug
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (!isPaused.value) {
+        Duration elapsed = DateTime.now().difference(startTime);
+        int minutes = elapsed.inMinutes;
+        int seconds = elapsed.inSeconds % 60;
+        elapsedTimeString.value =
+            "$minutes:${seconds.toString().padLeft(2, '0')}";
+        print("waktu${elapsedTimeString.value}"); // Tambahkan ini untuk debug
+      }
     });
   }
 
   void pauseGame() {
     isPaused.value = true;
-    stopTimer();
+    _timer?.cancel();
   }
 
   void resumeGame() {
     isPaused.value = false;
+    startTime = DateTime.now().subtract(Duration(
+      minutes: int.parse(elapsedTimeString.value.split(":")[0]),
+      seconds: int.parse(elapsedTimeString.value.split(":")[1]),
+    ));
     _startTimer();
   }
 
@@ -128,7 +144,7 @@ class MemoryGameController extends GetxController {
     Get.offAllNamed(Routes.HOME);
     await Future.delayed(Duration(milliseconds: 1400));
     isCountdownFinished.value = false;
-    elapsedTime.value = 0;
+    elapsedTimeString.value = "0:00";
   }
 
   void stopTimer() {
@@ -188,7 +204,8 @@ class MemoryGameController extends GetxController {
 
   void completedGame() async {
     GameController controller = Get.put(GameController());
-    int finalTime = elapsedTime.value;
+    int finalTime = convertTimeToSeconds(elapsedTimeString.value);
+
     int finalScore = 10;
     String userId = userModel.value!.id ?? "";
     String now = DateTime.now().toString();
@@ -212,7 +229,7 @@ class MemoryGameController extends GetxController {
     ).then((success) async {
       if (success) {
         print("Data gameplay berhasil dikirim!");
-        int? newPoint = await PointService.updateUserPoint(userId,5);
+        int? newPoint = await PointService.updateUserPoint(userId, 5);
         if (newPoint != null) {
           userModel.value = userModel.value!.copyWith(point: newPoint);
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -292,24 +309,5 @@ class MemoryGameController extends GetxController {
         newRankIndex: newIndex >= 0 ? newIndex : null,
       );
     }
-  }
-
-  void showGameOverDialog() {
-    Get.dialog(
-      AlertDialog(
-        title: const Text("Game Selesai! 🎉"),
-        content: Text("Waktu bermain: ${elapsedTime.value} detik"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-              restartGame();
-            },
-            child: const Text("Main Lagi"),
-          ),
-        ],
-      ),
-      barrierDismissible: false,
-    );
   }
 }

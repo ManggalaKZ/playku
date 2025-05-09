@@ -19,8 +19,7 @@ class PointService {
       final response =
           await supabase.from('users').select('*').eq('id', userId).single();
       print("Supabase user response: $response");
-      if (response == null ||
-          response['id'] == null ||
+      if (response['id'] == null ||
           response['username'] == null ||
           response['name'] == null ||
           response['email'] == null ||

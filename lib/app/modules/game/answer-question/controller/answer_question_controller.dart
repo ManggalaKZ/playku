@@ -1,13 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:playku/app/data/models/user_model.dart';
-import 'package:playku/app/data/services/point_service.dart';
-import 'package:playku/app/data/services/game_service.dart';
-import 'package:playku/app/data/services/leaderboard_service.dart';
+
 import 'package:playku/app/widgets/dialog_new_leaderboard/dialog_new_leaderboard.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:playku/core.dart';
 
 class AnswerQuestionController extends GetxController {
@@ -15,8 +9,11 @@ class AnswerQuestionController extends GetxController {
   var currentQuestion = 1.obs;
   var correctAnswers = 0.obs;
   var elapsedTimeString = "0:00".obs;
+  var isRestartingGame = false.obs;
+  var isCountdownFinished = false.obs;
+  bool isPaused = false;
+
   Timer? _timer;
-  bool _isPaused = false;
   var leaderboard = <Leaderboard>[].obs;
   String lastElapsedTime = "";
 
@@ -36,7 +33,7 @@ class AnswerQuestionController extends GetxController {
   void startTimer() {
     print("Timer dimulai"); // Tambahkan ini untuk debug
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (!_isPaused) {
+      if (!isPaused) {
         Duration elapsed = DateTime.now().difference(startTime);
         int minutes = elapsed.inMinutes;
         int seconds = elapsed.inSeconds % 60;
@@ -48,6 +45,7 @@ class AnswerQuestionController extends GetxController {
   }
 
   late DateTime startTime;
+
   void startGame() {
     startTime = DateTime.now();
     startTimer();
@@ -56,12 +54,12 @@ class AnswerQuestionController extends GetxController {
   }
 
   void pauseGame() {
-    _isPaused = true;
+    isPaused = true;
     _timer?.cancel();
   }
 
   void resumeGame() {
-    _isPaused = false;
+    isPaused = false;
     startTime = DateTime.now().subtract(Duration(
       minutes: int.parse(elapsedTimeString.value.split(":")[0]),
       seconds: int.parse(elapsedTimeString.value.split(":")[1]),

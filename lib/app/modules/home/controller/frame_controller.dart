@@ -180,7 +180,6 @@ class FrameController extends GetxController {
       );
 
       Get.back();
-      Get.back();
       Get.snackbar("Berhasil", "Border berhasil diganti!");
     } catch (e) {
       Get.back();

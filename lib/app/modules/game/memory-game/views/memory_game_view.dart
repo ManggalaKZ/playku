@@ -1,136 +1,118 @@
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:playku/app/data/services/audio_service.dart';
+import 'package:playku/app/modules/game/answer-question/component/pause_component.dart';
 import 'package:playku/app/modules/game/memory-game/views/game_over_view.dart';
 import 'package:playku/app/widgets/countdown_view.dart';
+import 'package:playku/app/widgets/dialog_exit_game.dart';
 import 'package:playku/theme.dart';
 import '../controllers/memory_game_controller.dart';
 import '../game/memory_game.dart';
-
 
 class MemoryGameView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MemoryGameController controller = Get.find<MemoryGameController>();
     final MemoryGame game = Get.find<MemoryGame>();
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            GameWidget(
-              game: game,
-              overlayBuilderMap: {
-                'GameOver': (context, game) =>
-                    GameOverScreen(game as MemoryGame),
-              },
-            ),
-            Obx(() {
-              if (!controller.isCountdownFinished.value ||
-                  controller.isRestartingGame.value) {
-                return CountdownView(onCountdownFinished: controller.startGame);
-              }
-              return SizedBox();
-            }),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                color: Colors.black.withOpacity(0.5),
-                padding: EdgeInsets.all(8),
-                child: Obx(() => Text(
-                      "Waktu: ${controller.elapsedTime.value} detik",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    )),
-              ),
-            ),
-            Positioned(
-              top: 50,
-              right: 20,
-              child: IconButton(
-                icon: Icon(Icons.menu, color: Colors.white, size: 30),
-                onPressed: () {
-                  AudioService.playButtonSound();
-                  controller.pauseGame();
+    return WillPopScope(
+      onWillPop: () async {
+        final exit = await Get.dialog<bool>(
+          ExitDialogGame(
+            onExit: () async {
+              AudioService.playButtonSound();
+              controller.stopTimer();
+              controller.exitGame();
+              controller.isPaused.value = false;
+            },
+          ),
+          barrierDismissible: false,
+        );
+        return exit ?? false;
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Stack(
+            children: [
+              GameWidget(
+                game: game,
+                overlayBuilderMap: {
+                  'GameOver': (context, game) =>
+                      GameOverScreen(game as MemoryGame),
                 },
               ),
-            ),
-            Obx(() {
-              if (controller.isPaused.value) {
-                return Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  color: const Color.fromARGB(159, 0, 0, 0),
-                  child: Center(
+              Obx(() {
+                if (!controller.isCountdownFinished.value ||
+                    controller.isRestartingGame.value) {
+                  return CountdownView(
+                      onCountdownFinished: controller.startGame);
+                }
+                return SizedBox();
+              }),
+              Obx(() {
+                if (!game.controller.isPaused.value &&
+                    game.controller.isCountdownFinished.value) {
+                  return Align(
+                    alignment: Alignment.topCenter,
                     child: Container(
-                      height: 250,
-                      width: 320,
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
+                      margin: EdgeInsets.only(top: Get.height * 0.1),
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(10),
+                        color: const Color.fromARGB(255, 255, 255, 255)
+                            .withOpacity(0.5),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Game Paused",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 40),
-                          ElevatedButton(
-                            onPressed: () {
-                              AudioService.playButtonSound();
-                              controller.resumeGame();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.secondary,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(32),
-                              ),
-                            ),
-                            child: Text("Resume",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 18)),
-                          ),
-                          SizedBox(height: 10),
-                          ElevatedButton(
-                            onPressed: () {
-                              AudioService.playButtonSound();
-                              controller.stopTimer();
-                              controller.exitGame();
-                              controller.isPaused.value = false;
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.secondary,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(32),
-                              ),
-                            ),
-                            child: Text("Keluar",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 18)),
-                          ),
-                        ],
-                      ),
+                      child: Obx(() {
+                        return Text(
+                          controller.elapsedTimeString.value,
+                          style: GoogleFonts.sawarabiGothic(
+                              fontSize: 28, color: Colors.white),
+                        );
+                      }),
                     ),
-                  ),
-                );
-              }
-              return SizedBox.shrink();
-            }),
-          ],
+                  );
+                }
+                return SizedBox();
+              }),
+              Positioned(
+                top: 50,
+                right: 20,
+                child: IconButton(
+                  icon: Icon(Icons.menu, color: Colors.white, size: 30),
+                  onPressed: () {
+                    AudioService.playButtonSound();
+                    controller.pauseGame();
+                  },
+                ),
+              ),
+              Obx(() {
+                if (controller.isPaused.value) {
+                  return PauseOverlay(
+                    waktu: "${controller.elapsedTimeString.value}",
+                    namaGame: "Memory Game",
+                    onResume: () {
+                      AudioService.playButtonSound();
+                      controller.resumeGame();
+                    },
+                    onRestart: () {
+                      AudioService.playButtonSound();
+                      game.controller.mainlagi();
+                      controller.isPaused.value = false;
+                      game.overlays.remove('GameOver');
+                    },
+                    onExit: () {
+                      AudioService.playButtonSound();
+                      controller.stopTimer();
+                      controller.exitGame();
+                      controller.isPaused.value = false;
+                    },
+                  );
+                }
+                return SizedBox.shrink();
+              }),
+            ],
+          ),
         ),
       ),
     );

@@ -127,7 +127,6 @@ class LeaderboardController extends GetxController {
   }
 
   void showLeaderboard() {
-
     filterLeaderboard();
     groupLeaderboardByGameAndLevel();
 
@@ -177,6 +176,7 @@ class LeaderboardController extends GetxController {
 
     return GestureDetector(
       onTap: () {
+        AudioService.playButtonSound();
         selectedGameId.value = gameId;
         filterLeaderboard();
       },
