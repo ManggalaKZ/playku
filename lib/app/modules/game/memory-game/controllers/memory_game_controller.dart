@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:playku/app/data/services/queue_service.dart';
 import 'package:playku/app/widgets/dialog_new_leaderboard/dialog_new_leaderboard.dart';
 import 'package:playku/core.dart';
 import 'package:playku/core_game.dart';
@@ -89,7 +90,7 @@ class MemoryGameController extends GetxController {
 
   void startGame() {
     startTime = DateTime.now();
-    print("Countdown selesai! Game dimulai...");
+    debugPrint("Countdown selesai! Game dimulai...");
     isCountdownFinished.value = true;
     isRestartingGame.value = false;
     restartGame();
@@ -110,7 +111,7 @@ class MemoryGameController extends GetxController {
   }
 
   void _startTimer() {
-    print("Timer dimulai"); // Tambahkan ini untuk debug
+    debugPrint("Timer dimulai"); // Tambahkan ini untuk debug
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (!isPaused.value) {
         Duration elapsed = DateTime.now().difference(startTime);
@@ -118,7 +119,8 @@ class MemoryGameController extends GetxController {
         int seconds = elapsed.inSeconds % 60;
         elapsedTimeString.value =
             "$minutes:${seconds.toString().padLeft(2, '0')}";
-        print("waktu${elapsedTimeString.value}"); // Tambahkan ini untuk debug
+        debugPrint(
+            "waktu${elapsedTimeString.value}"); // Tambahkan ini untuk debug
       }
     });
   }
@@ -198,7 +200,7 @@ class MemoryGameController extends GetxController {
         name: userData["username"],
         email: userData["email"],
       );
-      print("User berhasil dimuat: ${userModel.value!.id}");
+      debugPrint("User berhasil dimuat: ${userModel.value!.id}");
     }
   }
 
@@ -211,41 +213,63 @@ class MemoryGameController extends GetxController {
     String now = DateTime.now().toString();
     String levels = selectedLevel.value.toString().split('.').last;
 
-    loadLeaderboard(controller.idgame);
+    Map<String, dynamic> gameResult = {
+      'userId': userId,
+      'gameId': controller.idgame,
+      'score': finalScore,
+      'timePlay': finalTime,
+      'level': levels,
+      'playedAt': now,
+    };
 
-    print("User ID: $userId");
-    print("Game ID: ${controller.idgame}");
-    print("Final Score: $finalScore");
-    print("Final Time: $finalTime");
-    print("Date Now: $now");
-
-    GameService.postGameResult(
+    bool success = await GameService.postGameResult(
       userId: userId,
       gameId: controller.idgame,
       score: finalScore,
       timePlay: finalTime,
       level: levels,
       playedAt: now,
-    ).then((success) async {
-      if (success) {
-        print("Data gameplay berhasil dikirim!");
-        int? newPoint = await PointService.updateUserPoint(userId, 5);
-        if (newPoint != null) {
-          userModel.value = userModel.value!.copyWith(point: newPoint);
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('user', jsonEncode(userModel.value!.toJson()));
-          print("Point berhasil disinkronkan ke SharedPreferences: $newPoint");
-          HomeController homeController = Get.find<HomeController>();
-          homeController.userController.loadUserFromPrefs();
-          homeController.userController.userModel.refresh();
-          homeController.leaderboardController.loadLeaderboard();
-        }
-      } else {
-        print("Gagal mengirim data gameplay.");
-      }
-    });
+    );
 
-    // Simpan ke leaderboard
+    if (!success) {
+      await QueueService.addToQueue(gameResult);
+    } else {
+      await QueueService.removeFromQueue(gameResult);
+      debugPrint("Data gameplay berhasil dikirim!");
+      int? newPoint = await PointService.updateUserPoint(userId, 5);
+      if (newPoint != null) {
+        userModel.value = userModel.value!.copyWith(point: newPoint);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('user', jsonEncode(userModel.value!.toJson()));
+        debugPrint(
+            "Point berhasil disinkronkan ke SharedPreferences: $newPoint");
+        HomeController homeController = Get.find<HomeController>();
+        homeController.userController.loadUserFromPrefs();
+        homeController.userController.userModel.refresh();
+        homeController.leaderboardController.loadLeaderboard();
+      }
+    }
+    await QueueService.processQueue();
+
+    // .then((success) async {
+    //   if (success) {
+    //     debugPrint("Data gameplay berhasil dikirim!");
+    //     int? newPoint = await PointService.updateUserPoint(userId, 5);
+    //     if (newPoint != null) {
+    //       userModel.value = userModel.value!.copyWith(point: newPoint);
+    //       SharedPreferences prefs = await SharedPreferences.getInstance();
+    //       prefs.setString('user', jsonEncode(userModel.value!.toJson()));
+    //       debugPrint("Point berhasil disinkronkan ke SharedPreferences: $newPoint");
+    //       HomeController homeController = Get.find<HomeController>();
+    //       homeController.userController.loadUserFromPrefs();
+    //       homeController.userController.userModel.refresh();
+    //       homeController.leaderboardController.loadLeaderboard();
+    //     }
+    //   } else {
+    //     debugPrint("Gagal mengirim data gameplay.");
+    //   }
+    // });
+
     Leaderboard entry = Leaderboard(
       userId: userId,
       gameId: controller.idgame,
@@ -269,7 +293,7 @@ class MemoryGameController extends GetxController {
       leaderboard.value =
           await LeaderboardService.getLeaderboard(gameId, levels);
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
     }
   }
 

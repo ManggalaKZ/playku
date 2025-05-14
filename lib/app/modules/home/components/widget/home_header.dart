@@ -13,7 +13,7 @@ class HomeHeader extends StatelessWidget {
   final BuildContext context;
   bool tooltipShown;
   final GlobalKey _editButtonKey = GlobalKey();
-   HomeHeader({
+  HomeHeader({
     super.key,
     required this.userController,
     required this.frameController,

@@ -84,7 +84,7 @@ class ChooseFrameDialog extends StatelessWidget {
                               image: NetworkImage(frame.imagePath ?? ''),
                               fit: BoxFit.cover,
                               onError: (exception, stackTrace) {
-                                print('Error loading image: $exception');
+                                debugPrint('Error loading image: $exception');
                               },
                             ),
                           ),

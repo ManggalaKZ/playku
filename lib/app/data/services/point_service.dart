@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:playku/app/data/local/shared_preference_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -18,13 +19,13 @@ class PointService {
     try {
       final response =
           await supabase.from('users').select('*').eq('id', userId).single();
-      print("Supabase user response: $response");
+      debugPrint("Supabase user response: $response");
       if (response['id'] == null ||
           response['username'] == null ||
           response['name'] == null ||
           response['email'] == null ||
           response['point'] == null) {
-        print("Error: Data user tidak lengkap atau user tidak ditemukan.");
+        debugPrint("Error: Data user tidak lengkap atau user tidak ditemukan.");
         return null;
       }
 
@@ -41,10 +42,10 @@ class PointService {
         point: newPoint,
       );
 
-      print("User point updated in Supabase: $newPoint");
+      debugPrint("User point updated in Supabase: $newPoint");
       return newPoint;
     } catch (e) {
-      print("Error updating user point: $e");
+      debugPrint("Error updating user point: $e");
       return null;
     }
   }

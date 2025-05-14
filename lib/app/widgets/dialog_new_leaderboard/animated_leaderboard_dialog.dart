@@ -53,7 +53,7 @@ class _AnimatedLeaderboardDialogState extends State<AnimatedLeaderboardDialog>
 
   Future<void> _setAndAddPointUser() async {
     pointTambahan = LeaderboardPointService.calculatePoint(widget.newRankIndex);
-    print("Point tambahan: $pointTambahan");
+    debugPrint("Point tambahan: $pointTambahan");
     await LeaderboardPointService.addPointUser(pointTambahan);
     setState(() {});
   }
@@ -61,8 +61,8 @@ class _AnimatedLeaderboardDialogState extends State<AnimatedLeaderboardDialog>
   Future<void> _fetchUsersForLeaderboard() async {
     Future<List<Leaderboard>> updateUserData(List<Leaderboard> ranks) async {
       List<Leaderboard> updatedRanks = [];
-      print("Fetching user details for leaderboard...");
-      print("Original rank list: ${ranks.map((e) => e.userId).toList()}");
+      debugPrint("Fetching user details for leaderboard...");
+      debugPrint("Original rank list: ${ranks.map((e) => e.userId).toList()}");
 
       for (var entry in ranks) {
         try {

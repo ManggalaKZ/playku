@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:playku/core.dart';
 
@@ -16,7 +17,8 @@ class LeaderboardService {
   static Future<List<Leaderboard>> getLeaderboard(
       int gameId, String level) async {
     try {
-      print("Fetching leaderboard for game ID: $gameId and level: $level...");
+      debugPrint(
+          "Fetching leaderboard for game ID: $gameId and level: $level...");
 
       final response = await http.get(
         Uri.parse("${baseUrl}leaderboard?game_id=eq.$gameId&level=eq.$level"),
@@ -25,24 +27,24 @@ class LeaderboardService {
 
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
-        print("Leaderboard data received: ${data.length} entries");
+        debugPrint("Leaderboard data received: ${data.length} entries");
 
         List<Leaderboard> leaderboard = data
             .map((entry) => Leaderboard.fromJson(entry))
             .toList()
           ..sort((a, b) => a.timePlay.compareTo(b.timePlay));
 
-        print(
+        debugPrint(
             "Filtered leaderboard (game_id=$gameId, level=$level): ${leaderboard.length} entries");
 
         return leaderboard.take(3).toList();
       } else {
-        print(
+        debugPrint(
             "Failed to fetch leaderboard. Status code: ${response.statusCode}");
         throw Exception("Gagal mengambil leaderboard");
       }
     } catch (e) {
-      print("Error in getLeaderboard: $e");
+      debugPrint("Error in getLeaderboard: $e");
       return [];
     }
   }
@@ -56,8 +58,8 @@ class LeaderboardService {
 
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
-        print("status codes ${response.statusCode}");
-        print("Leaderboard data received: ${data.length} entries");
+        debugPrint("status codes ${response.statusCode}");
+        debugPrint("Leaderboard data received: ${data.length} entries");
 
         List<Leaderboard> leaderboard =
             await Future.wait(data.map((entry) async {
@@ -79,25 +81,25 @@ class LeaderboardService {
         throw Exception("Gagal mengambil leaderboard");
       }
     } catch (e) {
-      print("Error in getLeaderboardAll: $e");
+      debugPrint("Error in getLeaderboardAll: $e");
       return [];
     }
   }
 
   static Future<void> updateLeaderboard(Leaderboard newEntry) async {
     try {
-      print(
+      debugPrint(
           "Updating leaderboard for game ID: ${newEntry.gameId} at level: ${newEntry.level}...");
 
       List<Leaderboard> currentLeaderboard =
           await getLeaderboard(newEntry.gameId, newEntry.level);
-      print("Current leaderboard entries: ${currentLeaderboard.length}");
+      debugPrint("Current leaderboard entries: ${currentLeaderboard.length}");
 
       if (currentLeaderboard.length < 3 ||
           newEntry.timePlay < currentLeaderboard.last.timePlay) {
         if (currentLeaderboard.length == 3) {
           final worstId = currentLeaderboard.last.id;
-          print("Deleting worst entry with ID: $worstId");
+          debugPrint("Deleting worst entry with ID: $worstId");
 
           final deleteResponse = await http.delete(
             Uri.parse("${baseUrl}leaderboard?id=eq.$worstId"),
@@ -105,14 +107,14 @@ class LeaderboardService {
           );
 
           if (deleteResponse.statusCode == 204) {
-            print("Deleted worst entry successfully.");
+            debugPrint("Deleted worst entry successfully.");
           } else {
-            print(
+            debugPrint(
                 "Failed to delete. Status code: ${deleteResponse.statusCode}");
           }
         }
 
-        print("Adding new entry to leaderboard...");
+        debugPrint("Adding new entry to leaderboard...");
         final postResponse = await http.post(
           Uri.parse("${baseUrl}leaderboard"),
           headers: headers,
@@ -120,16 +122,16 @@ class LeaderboardService {
         );
 
         if (postResponse.statusCode == 201) {
-          print("New entry added successfully!");
+          debugPrint("New entry added successfully!");
         } else {
-          print(
+          debugPrint(
               "Failed to add new entry. Status code: ${postResponse.statusCode}");
         }
       } else {
-        print("New entry is not in the top 3, skipping update.");
+        debugPrint("New entry is not in the top 3, skipping update.");
       }
     } catch (e) {
-      print("Error in updateLeaderboard: $e");
+      debugPrint("Error in updateLeaderboard: $e");
     }
   }
 }

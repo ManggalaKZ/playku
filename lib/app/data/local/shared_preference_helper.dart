@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferenceHelper {
@@ -73,7 +74,7 @@ class SharedPreferenceHelper {
         return List<String>.from(data);
       }
     } catch (e) {
-      print("❌ Error decoding ownedBorderIds: $e");
+      debugPrint("❌ Error decoding ownedBorderIds: $e");
     }
     return [];
   }

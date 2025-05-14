@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:playku/app/widgets/dialog_new_leaderboard/dialog_new_leaderboard.dart';
@@ -31,7 +32,7 @@ class AnswerQuestionController extends GetxController {
   }
 
   void startTimer() {
-    print("Timer dimulai"); // Tambahkan ini untuk debug
+    debugPrint("Timer dimulai"); // Tambahkan ini untuk debug
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (!isPaused) {
         Duration elapsed = DateTime.now().difference(startTime);
@@ -39,7 +40,7 @@ class AnswerQuestionController extends GetxController {
         int seconds = elapsed.inSeconds % 60;
         elapsedTimeString.value =
             "$minutes:${seconds.toString().padLeft(2, '0')}";
-        print(elapsedTimeString.value); // Tambahkan ini untuk debug
+        debugPrint(elapsedTimeString.value); // Tambahkan ini untuk debug
       }
     });
   }
@@ -84,7 +85,7 @@ class AnswerQuestionController extends GetxController {
       leaderboard.value =
           await LeaderboardService.getLeaderboard(gameId, levels);
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
     }
   }
 

@@ -57,7 +57,7 @@ class LoginController extends GetxController {
     String password = passwordController.text;
 
     var userData = await _authService.login(username, password);
-    print("Login Response: $userData");
+    debugPrint("Login Response: $userData");
     isLoading.value = false;
 
     if (userData != null) {
@@ -73,7 +73,7 @@ class LoginController extends GetxController {
         ownedBorderIds: userData.ownedBorderIds,
         usedBorderIds: userData.usedBorderIds,
       );
-      print("user yang disimpan setelah log ${userData.usedBorderIds}");
+      debugPrint("user yang disimpan setelah log ${userData.usedBorderIds}");
       Get.snackbar("Success", "Login berhasil", backgroundColor: AppColors.bg);
       Get.offAllNamed(Routes.HOME);
     } else {

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'dart:async' as dart_async;
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:playku/app/modules/game/mineswepper/components/board_component_minesweeper.dart';
 import 'package:playku/app/modules/game/mineswepper/controllers/minesweeper_controller.dart';
@@ -43,7 +44,7 @@ class MinesweeperGame extends FlameGame {
   }
 
   void _startTimer() {
-    print("Timer dimulai");
+    debugPrint("Timer dimulai");
     _timer?.cancel();
     _timer = dart_async.Timer.periodic(Duration(seconds: 1), (timer) {
       if (!isPaused.value) {
@@ -52,7 +53,7 @@ class MinesweeperGame extends FlameGame {
         int seconds = elapsed.inSeconds % 60;
         elapsedTimeString.value =
             "$minutes:${seconds.toString().padLeft(2, '0')}";
-        print("waktu${elapsedTimeString.value}");
+        debugPrint("waktu${elapsedTimeString.value}");
       }
     });
   }

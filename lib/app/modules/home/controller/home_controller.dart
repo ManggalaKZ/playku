@@ -1,23 +1,45 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:playku/app/modules/home/components/dialog_koneksi_terputus.dart';
 import 'package:playku/app/modules/home/controller/frame_controller.dart';
 import 'package:playku/app/modules/home/controller/leaderboard_controller.dart';
 import 'package:playku/app/modules/home/controller/user_controller.dart';
 import 'package:playku/core.dart';
 
 class HomeController extends GetxController {
-  // LeaderboardController leaderboardController =
-  //     Get.put<LeaderboardController>(LeaderboardController());
-  // FrameController frameController = Get.put<FrameController>(FrameController());
   late UserController userController;
   late LeaderboardController leaderboardController;
   late FrameController frameController;
-  // var leaderboard = <Leaderboard>[].obs;
-  // var isLoading = false.obs;
-  
 
   @override
   void onInit() {
+    super.onInit();
+    userController = Get.find<UserController>();
+    leaderboardController = Get.find<LeaderboardController>();
+    frameController = Get.find<FrameController>();
+
+    loadUserFromPrefs().then((_) {
+      fetchFrames();
+    });
+    loadLeaderboard();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    _checkInternetConnection();
+  }
+
+  Future<void> _checkInternetConnection() async {
+    final result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.none) {
+      debugPrint('Koneksi internet terputus');
+      Get.dialog(KoneksiTerputusDialog());
+    }
+  }
+
+  void reloadHome() {
     super.onInit();
     userController = Get.find<UserController>();
     leaderboardController = Get.find<LeaderboardController>();

@@ -23,7 +23,7 @@ class GameController extends GetxController {
   }
 
   void playGame(int indexGame) {
-    print("Index game yang dipilih: $indexGame");
+    debugPrint("Index game yang dipilih: $indexGame");
     switch (indexGame) {
       case 0:
         idgame = 0;
@@ -38,7 +38,7 @@ class GameController extends GetxController {
         Get.toNamed('/minesweeper');
         break;
       default:
-        print("Game tidak tersedia");
+        debugPrint("Game tidak tersedia");
         break;
     }
   }

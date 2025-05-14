@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:playku/app/data/services/point_service.dart';
 import 'package:playku/app/modules/home/controller/home_controller.dart';
@@ -20,21 +21,22 @@ class LeaderboardPointService {
   static Future<void> addPointUser(int? pointTambahan) async {
     HomeController homeController = Get.find<HomeController>();
     if (homeController.userController.userModel.value == null) {
-      print("Error: userModel.value is null");
+      debugPrint("Error: userModel.value is null");
       return;
     }
     if (pointTambahan == null) {
-      print("Error: pointTambahan is null");
+      debugPrint("Error: pointTambahan is null");
       return;
     }
     int? newPoint = await PointService.updateUserPoint(
         homeController.userController.userModel.value!.id, pointTambahan);
     if (newPoint != null) {
-      homeController.userController.userModel.value =
-          homeController.userController.userModel.value!.copyWith(point: newPoint);
+      homeController.userController.userModel.value = homeController
+          .userController.userModel.value!
+          .copyWith(point: newPoint);
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString(
-          'user', jsonEncode(homeController.userController.userModel.value!.toJson()));
+      prefs.setString('user',
+          jsonEncode(homeController.userController.userModel.value!.toJson()));
       homeController.userController.loadUserFromPrefs();
       homeController.userController.userModel.refresh();
       homeController.leaderboardController.loadLeaderboard();

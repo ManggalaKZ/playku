@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class GameService {
@@ -25,7 +26,7 @@ class GameService {
           return data[0]['name'];
         }
       }
-      print("code get name ${response.statusCode}");
+      debugPrint("code get name ${response.statusCode}");
       return "Unknown Game";
     } catch (e) {
       return "Unknown Game";
@@ -57,14 +58,14 @@ class GameService {
       );
 
       if (response.statusCode == 201) {
-        print("Data berhasil dikirim: ${response.body}");
+        debugPrint("Data berhasil dikirim: ${response.body}");
         return true;
       } else {
-        print("Gagal mengirim data: ${response.body}");
+        debugPrint("Gagal mengirim data: ${response.body}");
         return false;
       }
     } catch (e) {
-      print("Error saat mengirim data: $e");
+      debugPrint("Error saat mengirim data: $e");
       return false;
     }
   }

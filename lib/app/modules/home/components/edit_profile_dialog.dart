@@ -51,7 +51,6 @@ class EditProfileDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-
               TextFormField(
                 controller: usernameController,
                 decoration: const InputDecoration(
@@ -60,7 +59,6 @@ class EditProfileDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-
               TextFormField(
                 controller: namaController,
                 decoration: const InputDecoration(
@@ -69,7 +67,6 @@ class EditProfileDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-
               TextFormField(
                 controller: emailController,
                 decoration: const InputDecoration(
@@ -78,7 +75,6 @@ class EditProfileDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-
               TextFormField(
                 controller: passwordController,
                 obscureText: true,
@@ -88,7 +84,6 @@ class EditProfileDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-
               TextFormField(
                 controller: confirmPasswordController,
                 obscureText: true,
@@ -98,17 +93,15 @@ class EditProfileDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-
               Obx(() => QImagePicker(
                     label: "Foto Profil",
                     value: avatarPath.value,
                     onChanged: (path) {
                       avatarPath.value = path;
-                      print("[DEBUG] Avatar terpilih: $path");
+                      debugPrint("[DEBUG] Avatar terpilih: $path");
                     },
                   )),
               const SizedBox(height: 16),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -132,10 +125,12 @@ class EditProfileDialog extends StatelessWidget {
                   const SizedBox(width: 16),
                   Obx(() => Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: isUploading.value ? null : () {
-                            AudioService.playButtonSound();
-                            onSave();
-                          },
+                          onPressed: isUploading.value
+                              ? null
+                              : () {
+                                  AudioService.playButtonSound();
+                                  onSave();
+                                },
                           icon: const Icon(
                             Icons.save,
                             color: AppColors.whitePrimary,

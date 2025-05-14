@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:playku/app/data/services/queue_service.dart';
 import 'package:playku/app/widgets/dialog_new_leaderboard/dialog_new_leaderboard.dart';
 import 'package:playku/core.dart';
 import 'package:playku/core_game.dart';
@@ -102,7 +103,7 @@ class MinesweeperController extends GetxController {
     update();
   }
 
-  void addData(BuildContext context) {
+  void addData(BuildContext context) async {
     final game = Get.find<MinesweeperGame>();
     int finalTime = lastTime;
     int finalScore = 10;
@@ -112,39 +113,71 @@ class MinesweeperController extends GetxController {
 
     loadLeaderboard(idgame);
 
-    print("User ID: $userId");
-    print("Game ID: ${idgame}");
-    print("Final Score: $finalScore");
-    print("Final Time: $finalTime");
-    print("Date Now: $now");
+    debugPrint("User ID: $userId");
+    debugPrint("Game ID: ${idgame}");
+    debugPrint("Final Score: $finalScore");
+    debugPrint("Final Time: $finalTime");
+    debugPrint("Date Now: $now");
 
-    GameService.postGameResult(
+    Map<String, dynamic> gameResult = {
+      'userId': userId,
+      'gameId': idgame,
+      'score': finalScore,
+      'timePlay': finalTime,
+      'level': levels,
+      'playedAt': now,
+    };
+
+    bool success = await GameService.postGameResult(
       userId: userId,
       gameId: idgame,
       score: finalScore,
       timePlay: finalTime,
       level: levels,
       playedAt: now,
-    ).then((success) async {
-      if (success) {
-        print("Data gameplay berhasil dikirim!");
-        int? newPoint = await PointService.updateUserPoint(userId, 5);
-        if (newPoint != null) {
-          userModel.value = userModel.value!.copyWith(point: newPoint);
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('user', jsonEncode(userModel.value!.toJson()));
-          print("Point berhasil disinkronkan ke SharedPreferences: $newPoint");
-          HomeController homeController = Get.find<HomeController>();
-          homeController.userController.loadUserFromPrefs();
-          homeController.userController.userModel.refresh();
-          homeController.leaderboardController.loadLeaderboard();
-        }
-      } else {
-        print("Gagal mengirim data gameplay.");
-      }
-    });
+    );
 
-    // Simpan ke leaderboard
+    if (!success) {
+      await QueueService.addToQueue(gameResult);
+    } else {
+      await QueueService.removeFromQueue(gameResult);
+      debugPrint("Data gameplay berhasil dikirim!");
+      int? newPoint = await PointService.updateUserPoint(userId, 5);
+      if (newPoint != null) {
+        userModel.value = userModel.value!.copyWith(point: newPoint);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('user', jsonEncode(userModel.value!.toJson()));
+        debugPrint(
+            "Point berhasil disinkronkan ke SharedPreferences: $newPoint");
+        HomeController homeController = Get.find<HomeController>();
+        homeController.userController.loadUserFromPrefs();
+        homeController.userController.userModel.refresh();
+        homeController.leaderboardController.loadLeaderboard();
+      }
+    }
+
+    // Proses queue setiap kali game selesai (jika online)
+    await QueueService.processQueue();
+
+    // .then((success) async {
+    //   if (success) {
+    //     debugPrint("Data gameplay berhasil dikirim!");
+    //     int? newPoint = await PointService.updateUserPoint(userId, 5);
+    //     if (newPoint != null) {
+    //       userModel.value = userModel.value!.copyWith(point: newPoint);
+    //       SharedPreferences prefs = await SharedPreferences.getInstance();
+    //       prefs.setString('user', jsonEncode(userModel.value!.toJson()));
+    //       debugPrint("Point berhasil disinkronkan ke SharedPreferences: $newPoint");
+    //       HomeController homeController = Get.find<HomeController>();
+    //       homeController.userController.loadUserFromPrefs();
+    //       homeController.userController.userModel.refresh();
+    //       homeController.leaderboardController.loadLeaderboard();
+    //     }
+    //   } else {
+    //     debugPrint("Gagal mengirim data gameplay.");
+    //   }
+    // });
+
     Leaderboard entry = Leaderboard(
       userId: userId,
       gameId: idgame,
@@ -164,7 +197,7 @@ class MinesweeperController extends GetxController {
       leaderboard.value =
           await LeaderboardService.getLeaderboard(gameId, levels);
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
     }
   }
 
@@ -179,7 +212,7 @@ class MinesweeperController extends GetxController {
         name: userData["username"],
         email: userData["email"],
       );
-      print("User berhasil dimuat: ${userModel.value!.id}");
+      debugPrint("User berhasil dimuat: ${userModel.value!.id}");
     }
   }
 

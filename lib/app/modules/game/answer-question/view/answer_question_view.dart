@@ -15,7 +15,7 @@ class _AnswerQuestionViewState extends State<AnswerQuestionView> {
   final AnswerQuestionGame game = AnswerQuestionGame();
 
   void _startGame() {
-    print("Countdown selesai! Game dimulai...");
+    debugPrint("Countdown selesai! Game dimulai...");
     setState(() {
       game.controller.isCountdownFinished.value = true;
     });

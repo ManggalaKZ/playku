@@ -50,7 +50,7 @@ class FrameController extends GetxController {
       }
       usedFrame.refresh();
     } else {
-      print(
+      debugPrint(
           "Cannot update used frame yet. User loaded: ${userController.userModel.value != null}, Frames loaded: ${frames.isNotEmpty}");
     }
   }

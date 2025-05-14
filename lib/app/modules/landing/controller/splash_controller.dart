@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:playku/core.dart';
 
 class SplashController extends GetxController {
   @override
   void onInit() {
-    print("Splash Screen dijalankan");
+    debugPrint("Splash Screen dijalankan");
     super.onInit();
     navigateToNextPage();
   }
@@ -15,16 +16,15 @@ class SplashController extends GetxController {
       var userData = await SharedPreferenceHelper.getUserData();
 
       if (userData != null) {
-        print("User ditemukan: ${userData['username']}");
+        debugPrint("User ditemukan: ${userData['username']}");
         Get.offNamed(Routes.HOME);
-        
       } else {
-        print("User tidak ditemukan, ke WelcomeView");
+        debugPrint("User tidak ditemukan, ke WelcomeView");
         Get.offNamed(Routes.WELCOME);
       }
     } catch (e, stack) {
-      print("❌ Terjadi error di SplashController: $e");
-      print(stack);
+      debugPrint("❌ Terjadi error di SplashController: $e");
+      debugPrint(stack as String?);
       Get.offNamed(Routes.WELCOME); // fallback
     }
   }

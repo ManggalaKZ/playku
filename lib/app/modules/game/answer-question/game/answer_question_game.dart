@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:playku/core.dart';
 import 'package:playku/app/modules/game/answer-question/controller/answer_question_controller.dart';
+import 'package:playku/app/data/services/queue_service.dart';
 
 class AnswerQuestionGame extends FlameGame with TapDetector {
   final AnswerQuestionController controller =
@@ -82,30 +83,48 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
         gamecontroller.selectedLevel.value.toString().split('.').last;
     controller.loadLeaderboard(gc.idgame, levels);
 
-    GameService.postGameResult(
+    // Data yang akan dikirim
+    Map<String, dynamic> gameResult = {
+      'userId': userId,
+      'gameId': gc.idgame,
+      'score': finalScore,
+      'timePlay': finalTime,
+      'level': levels,
+      'playedAt': now,
+    };
+
+    bool success = await GameService.postGameResult(
       userId: userId,
       gameId: gc.idgame,
       score: finalScore,
       timePlay: finalTime,
       level: levels,
       playedAt: now,
-    ).then((success) async {
-      if (success) {
-        controller.lastElapsedTime = "00:00";
-        int? newPoint = await PointService.updateUserPoint(userId, 5);
-        if (newPoint != null) {
-          controller.userModel.value =
-              controller.userModel.value!.copyWith(point: newPoint);
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString(
-              'user', jsonEncode(controller.userModel.value!.toJson()));
-          HomeController homeController = Get.find<HomeController>();
-          homeController.userController.loadUserFromPrefs();
-          homeController.userController.userModel.refresh();
-          homeController.leaderboardController.loadLeaderboard();
-        }
+    );
+
+    if (!success) {
+      // Jika gagal, simpan ke queue
+      await QueueService.addToQueue(gameResult);
+    } else {
+      // Jika sukses, hapus dari queue jika ada data serupa
+      await QueueService.removeFromQueue(gameResult);
+      controller.lastElapsedTime = "00:00";
+      int? newPoint = await PointService.updateUserPoint(userId, 5);
+      if (newPoint != null) {
+        controller.userModel.value =
+            controller.userModel.value!.copyWith(point: newPoint);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString(
+            'user', jsonEncode(controller.userModel.value!.toJson()));
+        HomeController homeController = Get.find<HomeController>();
+        homeController.userController.loadUserFromPrefs();
+        homeController.userController.userModel.refresh();
+        homeController.leaderboardController.loadLeaderboard();
       }
-    });
+    }
+
+    // Proses queue setiap kali game selesai (jika online)
+    await QueueService.processQueue();
 
     Leaderboard entry = Leaderboard(
         userId: userId,

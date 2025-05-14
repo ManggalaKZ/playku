@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:playku/app/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +21,7 @@ class AuthService {
         headers: headers,
       );
 
-      print("Status code: ${response.statusCode}");
+      debugPrint("Status code: ${response.statusCode}");
 
       if (response.statusCode == 200) {
         List<dynamic> usersJson = json.decode(response.body);
@@ -31,19 +32,19 @@ class AuthService {
           if (user.password == password) {
             return user;
           } else {
-            print("Password salah");
+            debugPrint("Password salah");
             return null;
           }
         } else {
-          print("Username tidak ditemukan");
+          debugPrint("Username tidak ditemukan");
           return null;
         }
       } else {
-        print("Login gagal dengan status: ${response.statusCode}");
+        debugPrint("Login gagal dengan status: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      print('Login error: $e');
+      debugPrint('Login error: $e');
       return null;
     }
   }

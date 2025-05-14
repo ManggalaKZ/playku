@@ -44,18 +44,18 @@ class UserService {
   Future<UserModel?> purchaseBorder(
       String userId, String borderId, int borderPrice) async {
     try {
-      print("🔍 Mengambil data user dari Supabase...");
+      debugPrint("🔍 Mengambil data user dari Supabase...");
       final userResponse = await supabase
           .from('users')
           .select('point, ownedBorderIds')
           .eq('id', userId)
           .single();
 
-      print("✅ Data user: $userResponse");
+      debugPrint("✅ Data user: $userResponse");
 
       int currentPoint = userResponse['point'] ?? 0;
 
-      print("💰 Poin sekarang: $currentPoint");
+      debugPrint("💰 Poin sekarang: $currentPoint");
 
       List<String> currentOwnedBorders = [];
       final dynamic ownedBordersData = userResponse['ownedBorderIds'];
@@ -74,13 +74,13 @@ class UserService {
                 .map((item) => item.toString())
                 .where((item) => item.isNotEmpty));
           } catch (e) {
-            print(
+            debugPrint(
                 "⚠️ Error decoding ownedBorderIds string: $e. Data: $ownedBordersData");
           }
         }
       }
 
-      print("🧾 Border dimiliki: $currentOwnedBorders");
+      debugPrint("🧾 Border dimiliki: $currentOwnedBorders");
 
       if (currentPoint < borderPrice) {
         throw Exception("Poin tidak cukup untuk membeli border ini.");
@@ -94,7 +94,7 @@ class UserService {
       List<String> newOwnedBorders = List.from(currentOwnedBorders)
         ..add(borderId);
 
-      print(
+      debugPrint(
           "🛒 Update ke Supabase dengan poin baru: $newPoint dan border baru: $newOwnedBorders");
 
       final updateResponse = await supabase
@@ -107,12 +107,12 @@ class UserService {
           .select()
           .single();
 
-      print("📦 Update response: $updateResponse");
       debugPrint("📦 Update response: $updateResponse");
-      
+      debugPrint("📦 Update response: $updateResponse");
+
       final updatedUserData = UserModel.fromJson(updateResponse);
 
-      print("✅ UserModel setelah update: ${updatedUserData.toJson()}");
+      debugPrint("✅ UserModel setelah update: ${updatedUserData.toJson()}");
 
       await SharedPreferenceHelper.saveUserData(
         userId: updatedUserData.id,
@@ -125,32 +125,31 @@ class UserService {
         usedBorderIds: updatedUserData.usedBorderIds,
       );
 
-      print(
+      debugPrint(
           "🎉 Pembelian border berhasil. User diperbarui di SharedPreferences.");
       return updatedUserData;
     } catch (e) {
-      print("🔥 Error purchasing border: $e");
+      debugPrint("🔥 Error purchasing border: $e");
       if (e is PostgrestException) {
-        print("🧨 Supabase error: ${e.message}");
+        debugPrint("🧨 Supabase error: ${e.message}");
       }
       throw Exception(e.toString());
     }
   }
 
   Future<void> updateUsedBorder(String userId, String borderId) async {
-    print("[DEBUG] Memulai update used border...");
-    print("[DEBUG] User ID: $userId, Border ID: $borderId");
+    debugPrint("[DEBUG] Memulai update used border...");
+    debugPrint("[DEBUG] User ID: $userId, Border ID: $borderId");
 
     try {
-      await supabase.from('users').update({
-        'usedBorderIds': borderId
-      }) 
-          .eq('id', userId);
+      await supabase
+          .from('users')
+          .update({'usedBorderIds': borderId}).eq('id', userId);
 
-      print("[SUCCESS] Used border berhasil diupdate untuk user $userId");
+      debugPrint("[SUCCESS] Used border berhasil diupdate untuk user $userId");
     } catch (e, stackTrace) {
-      print("[ERROR] Gagal update used border: $e");
-      print("[STACKTRACE] $stackTrace");
+      debugPrint("[ERROR] Gagal update used border: $e");
+      debugPrint("[STACKTRACE] $stackTrace");
       throw Exception("Gagal memperbarui border yang digunakan: $e");
     }
   }
@@ -158,9 +157,9 @@ class UserService {
   Future<void> updateUser(String userId, Map<String, dynamic> data) async {
     final supabase = Supabase.instance.client;
 
-    print("[DEBUG] Memulai update user...");
-    print("[DEBUG] ID user: $userId");
-    print("[DEBUG] Data yang dikirim: $data");
+    debugPrint("[DEBUG] Memulai update user...");
+    debugPrint("[DEBUG] ID user: $userId");
+    debugPrint("[DEBUG] Data yang dikirim: $data");
 
     try {
       final response = await supabase
@@ -170,17 +169,18 @@ class UserService {
           .select()
           .maybeSingle();
 
-      print("[DEBUG] Response dari Supabase: $response");
+      debugPrint("[DEBUG] Response dari Supabase: $response");
 
       if (response == null) {
-        print("[ERROR] Response NULL, user tidak ditemukan atau update gagal");
+        debugPrint(
+            "[ERROR] Response NULL, user tidak ditemukan atau update gagal");
         throw Exception("User not found or update failed");
       }
 
-      print("[SUCCESS] Data user berhasil diupdate");
+      debugPrint("[SUCCESS] Data user berhasil diupdate");
     } catch (e, stackTrace) {
-      print("[ERROR] Gagal update user: $e");
-      print("[STACKTRACE] $stackTrace");
+      debugPrint("[ERROR] Gagal update user: $e");
+      debugPrint("[STACKTRACE] $stackTrace");
       rethrow;
     }
   }
