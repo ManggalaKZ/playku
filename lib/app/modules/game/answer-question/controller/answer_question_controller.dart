@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:playku/app/widgets/dialog_new_leaderboard/dialog_new_leaderboard.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 class AnswerQuestionController extends GetxController {
   var userModel = Rxn<UserModel>();

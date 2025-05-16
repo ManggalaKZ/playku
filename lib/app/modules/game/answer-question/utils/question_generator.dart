@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:math_expressions/math_expressions.dart';
-import 'package:playku/core_game.dart';
+import 'package:playku/core/core_game.dart';
 
 class QuestionData {
   final String question;

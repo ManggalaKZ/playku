@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 
 class TileComponent extends PositionComponent with TapCallbacks {

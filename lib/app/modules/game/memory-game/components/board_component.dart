@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 import 'dart:math';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 
 class BoardComponent extends PositionComponent with HasGameRef {

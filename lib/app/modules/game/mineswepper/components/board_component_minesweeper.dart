@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:get/get.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 
 class BoardComponentMinesweeper extends PositionComponent with HasGameRef {

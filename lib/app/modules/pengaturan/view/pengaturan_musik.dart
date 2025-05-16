@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:playku/app/data/services/audio_service.dart';
 import 'package:playku/app/modules/pengaturan/controller/pengaturan_controller.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 
 class PengaturanMusik extends StatelessWidget {
   const PengaturanMusik({super.key});

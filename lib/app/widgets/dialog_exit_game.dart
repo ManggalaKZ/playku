@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 
 class ExitDialogGame extends StatelessWidget {
   final VoidCallback onExit;

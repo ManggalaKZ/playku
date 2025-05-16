@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:playku/app/modules/home/controller/frame_controller.dart';
 import 'package:playku/app/modules/home/controller/user_controller.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable

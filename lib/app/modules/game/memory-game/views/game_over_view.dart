@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 class GameOverScreen extends StatelessWidget {
   final MemoryGame game;

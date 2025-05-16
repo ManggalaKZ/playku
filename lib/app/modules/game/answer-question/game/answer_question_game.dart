@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:playku/app/widgets/dialog_new_leaderboard/dialog_new_leaderboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 import 'package:playku/app/modules/game/answer-question/controller/answer_question_controller.dart';
 import 'package:playku/app/data/services/queue_service.dart';
 
@@ -103,10 +103,8 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
     );
 
     if (!success) {
-      // Jika gagal, simpan ke queue
       await QueueService.addToQueue(gameResult);
     } else {
-      // Jika sukses, hapus dari queue jika ada data serupa
       await QueueService.removeFromQueue(gameResult);
       controller.lastElapsedTime = "00:00";
       int? newPoint = await PointService.updateUserPoint(userId, 5);
@@ -122,8 +120,7 @@ class AnswerQuestionGame extends FlameGame with TapDetector {
         homeController.leaderboardController.loadLeaderboard();
       }
     }
-
-    // Proses queue setiap kali game selesai (jika online)
+    
     await QueueService.processQueue();
 
     Leaderboard entry = Leaderboard(

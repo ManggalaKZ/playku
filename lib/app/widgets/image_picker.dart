@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:playku/app/modules/home/controller/user_controller.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 const String _CLOUDINARY_CLOUD_NAME = 'dotz74j1p';
 const String _CLOUDINARY_API_KEY = '983354314759691';

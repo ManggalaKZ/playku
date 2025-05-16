@@ -81,6 +81,7 @@ flutter:
     - assets/images/logo.png
     - assets/images/memory.png
     - assets/images/math.png
+    - assets/images/Minesweeper.png
     - assets/images/pattern_light.png
     - assets/bg/hiasan.svg
     - assets/bg/bingkai.svg

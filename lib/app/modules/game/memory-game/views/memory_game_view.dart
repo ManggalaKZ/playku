@@ -7,7 +7,7 @@ import 'package:playku/app/modules/game/answer-question/component/pause_componen
 import 'package:playku/app/modules/game/memory-game/views/game_over_view.dart';
 import 'package:playku/app/widgets/countdown_view.dart';
 import 'package:playku/app/widgets/dialog_exit_game.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 import '../controllers/memory_game_controller.dart';
 import '../game/memory_game.dart';
 

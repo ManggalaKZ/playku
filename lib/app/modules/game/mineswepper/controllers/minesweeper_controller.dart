@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:playku/app/data/services/queue_service.dart';
 import 'package:playku/app/widgets/dialog_new_leaderboard/dialog_new_leaderboard.dart';
-import 'package:playku/core.dart';
-import 'package:playku/core_game.dart';
+import 'package:playku/core/core.dart';
+import 'package:playku/core/core_game.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MinesweeperController extends GetxController {

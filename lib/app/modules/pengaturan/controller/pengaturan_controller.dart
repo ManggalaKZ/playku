@@ -8,7 +8,7 @@ import 'package:playku/app/modules/pengaturan/view/pengaturan_border.dart';
 import 'package:playku/app/modules/pengaturan/view/pengaturan_musik.dart';
 import 'package:playku/app/modules/home/controller/frame_controller.dart';
 import 'package:playku/app/modules/home/controller/user_controller.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 
 class PengaturanController extends GetxController {
   var selectedIndex = 0.obs;

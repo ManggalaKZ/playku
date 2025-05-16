@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:playku/app/modules/home/controller/frame_controller.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 class UserController extends GetxController {
   var userModel = Rxn<UserModel>();

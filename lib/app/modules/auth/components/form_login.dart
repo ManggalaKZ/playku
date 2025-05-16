@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hintText;

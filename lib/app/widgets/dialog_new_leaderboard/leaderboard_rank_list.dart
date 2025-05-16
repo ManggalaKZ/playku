@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:playku/app/data/models/leaderboard_model.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 
 class LeaderboardRankList extends StatelessWidget {
   final List<Leaderboard> ranks;

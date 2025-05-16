@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:playku/app/data/local/shared_preference_helper.dart';
 import 'package:playku/app/modules/pengaturan/controller/pengaturan_controller.dart';
-import 'package:playku/core.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/core.dart';
+import 'package:playku/core/theme.dart';
 
 class PengaturanAkun extends StatelessWidget {
   const PengaturanAkun({super.key});

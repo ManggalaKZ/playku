@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:playku/app/data/models/frame_model.dart';
 import 'package:playku/app/data/services/audio_service.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 
 class PengaturanBorder extends StatelessWidget {
   final List<FrameModel> ownedframes;

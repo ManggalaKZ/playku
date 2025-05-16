@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:playku/app/modules/auth/controller/login_controller.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 
 class HomeBackground extends StatelessWidget {
   final BuildContext context;

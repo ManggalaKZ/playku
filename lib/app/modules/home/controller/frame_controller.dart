@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:playku/app/data/services/border_service.dart';
 import 'package:playku/app/modules/home/components/choose_frame_dialog.dart';
 import 'package:playku/app/modules/home/controller/user_controller.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 class FrameController extends GetxController {
   var frames = <FrameModel>[].obs;

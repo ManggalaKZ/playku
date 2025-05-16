@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:playku/app/data/services/queue_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +21,7 @@ void main() async {
     await QueueService.processQueue();
   }
 
-  // mengecek perubahan koneksi 
+  // mengecek perubahan koneksi
   Connectivity()
       .onConnectivityChanged
       .listen((ConnectivityResult result) async {
@@ -52,7 +52,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       defaultTransition: Transition.circularReveal,
-      // transitionDuration: Duration(milliseconds: 300),
       initialRoute: Routes.SPLASH,
       getPages: AppPages.routes,
     );

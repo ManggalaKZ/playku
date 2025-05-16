@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flame/game.dart';
 import 'package:get/get.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 
 class MemoryGame extends FlameGame {

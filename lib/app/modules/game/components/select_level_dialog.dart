@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:playku/core.dart';
-import 'package:playku/core_game.dart';
+import 'package:playku/core/core.dart';
+import 'package:playku/core/core_game.dart';
 
 
 

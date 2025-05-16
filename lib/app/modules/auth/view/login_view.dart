@@ -6,8 +6,8 @@ import 'package:playku/app/modules/auth/components/form_login.dart';
 import 'package:playku/app/modules/auth/controller/login_controller.dart';
 import 'package:playku/app/routes/app_routes.dart';
 import 'package:playku/app/widgets/dialog_exit.dart';
-import 'package:playku/app/widgets/sound_button.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/app/widgets/buttons/sound_button.dart';
+import 'package:playku/core/theme.dart';
 
 class LoginView extends GetView<LoginController> {
   const LoginView({super.key});

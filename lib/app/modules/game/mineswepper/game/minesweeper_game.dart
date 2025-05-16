@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:playku/app/modules/game/mineswepper/components/board_component_minesweeper.dart';
 import 'package:playku/app/modules/game/mineswepper/controllers/minesweeper_controller.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 
 class MinesweeperGame extends FlameGame {
   final controller = Get.find<MinesweeperController>();

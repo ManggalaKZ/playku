@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 class LeaderboardService {
   static const String baseUrl =

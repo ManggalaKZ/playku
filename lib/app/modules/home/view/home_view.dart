@@ -11,7 +11,7 @@ import 'package:playku/app/modules/home/controller/frame_controller.dart';
 import 'package:playku/app/modules/home/controller/leaderboard_controller.dart';
 import 'package:playku/app/modules/home/controller/user_controller.dart';
 import 'package:playku/app/widgets/dialog_exit.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 class HomeView extends GetView<HomeController> {
   HomeView({super.key});

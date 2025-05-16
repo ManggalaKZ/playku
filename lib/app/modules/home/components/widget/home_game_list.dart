@@ -25,7 +25,7 @@ class HomeGameList extends StatelessWidget {
       },
       {
         "title": "Mine Sweeper",
-        "thumbnail": "assets/images/memory.png",
+        "thumbnail": "assets/images/Minesweeper.png",
       },
     ];
 

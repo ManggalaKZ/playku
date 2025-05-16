@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:playku/app/bindings/login_binding.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 abstract class Routes {
   static const SPLASH = '/splash';

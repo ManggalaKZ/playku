@@ -7,7 +7,7 @@ import 'package:playku/app/data/services/user_service.dart';
 import 'package:playku/app/modules/home/controller/home_controller.dart';
 import 'package:playku/app/widgets/dialog_new_leaderboard/leaderboard_rank_list.dart';
 import 'package:playku/app/widgets/dialog_new_leaderboard/claim_point_button.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:playku/app/data/models/leaderboard_model.dart';
 import 'package:playku/app/widgets/dialog_new_leaderboard/leaderboard_point_service.dart';

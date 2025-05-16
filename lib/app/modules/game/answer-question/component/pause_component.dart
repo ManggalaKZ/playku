@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../../core.dart';
+import '../../../../../core/core.dart';
 
 class PauseOverlay extends StatelessWidget {
   final VoidCallback onResume;

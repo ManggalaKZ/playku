@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:playku/app/modules/game/answer-question/component/pause_component.dart';
 import 'package:playku/app/widgets/dialog_exit_game.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 class AnswerQuestionView extends StatefulWidget {
   @override

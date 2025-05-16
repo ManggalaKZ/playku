@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 
 class QuestionComponent extends PositionComponent {
   final String question;

@@ -5,7 +5,7 @@ import 'package:playku/app/modules/home/components/dialog_koneksi_terputus.dart'
 import 'package:playku/app/modules/home/controller/frame_controller.dart';
 import 'package:playku/app/modules/home/controller/leaderboard_controller.dart';
 import 'package:playku/app/modules/home/controller/user_controller.dart';
-import 'package:playku/core.dart';
+import 'package:playku/core/core.dart';
 
 class HomeController extends GetxController {
   late UserController userController;

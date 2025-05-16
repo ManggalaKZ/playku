@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:playku/theme.dart';
+import 'package:playku/core/theme.dart';
 import '../controller/pengaturan_controller.dart';
 
 class PengaturanDialog extends StatelessWidget {
